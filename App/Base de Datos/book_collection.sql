@@ -44,10 +44,10 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `book_collection`.`usuario` (
   `id_usuario` INT NOT NULL AUTO_INCREMENT,
-  `nombe` VARCHAR(30) NOT NULL,
+  `nombre` VARCHAR(30) NOT NULL,
   `primer_apellido` VARCHAR(30) NOT NULL,
   `segundo_apellido` VARCHAR(30) NOT NULL,
-  `usuario` VARCHAR(30) NOT NULL,
+  `usuario` VARCHAR(30) NOT NULL UNIQUE,
   `clave` VARCHAR(50) NOT NULL,
   PRIMARY KEY (`id_usuario`))
 ENGINE = InnoDB
