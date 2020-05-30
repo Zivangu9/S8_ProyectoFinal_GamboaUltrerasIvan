@@ -1,0 +1,9 @@
+Gestor de Base de Datos - Mysql
+Lenguaje - Python
+	Bibliotecas
+		GUI - Tkinter
+		Gráficas - matplotlib
+		Reportes - ReportLab
+Editor de Texto - SublimeText3
+Sistema Operativo - Windows 10
+Editor de Imágenes - Adobe Photoshop
