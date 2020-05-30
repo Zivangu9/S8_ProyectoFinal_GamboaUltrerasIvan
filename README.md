@@ -4,11 +4,14 @@ Proyecto final de la materia "Programacion Lógica y Funcional", es una aplicaci
 **Nombre Clave del proyecto:**
 My Book Collection
 
-**Características**
+**Implementación** 
+La aplicación esta construida con Python y Mysql
+
+**Características:**
 *Inicio de sesión
 *Registro de usuarios
 *Generación de reportes
 *Generación de gráficas
-
+<a/>
 **Diseñado y Desarrollado por:** 
 *Ivan Gamboa Ultreras
