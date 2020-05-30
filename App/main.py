@@ -36,9 +36,13 @@ def showLogin():
 	password = StringVar()
 	passwordEntry = Entry(login, textvariable=password, show='*').grid(row=1, column=1)
 	def validateLogin():
-		if (True):
+		sql_select_query = """ SELECT * FROM usuario WHERE usuario = %s AND clave = SHA1(%s)"""
+		conn.cursor.execute(sql_select_query,(username.get(),password.get()))
+		rows = conn.cursor.fetchall()
+		if (len(rows)==1):
 			iniciarApp()
-		pass
+		else:
+			messagebox.showerror("Error", "Usuario o Contraseña Incorrectos")
 	registerButton = Button(login, text="Register", command=showRegister).grid(row=2, column=0,sticky=W+E) 
 	loginButton = Button(login, text="Login", command=validateLogin).grid(row=2, column=1,sticky=W+E) 
 	login.mainloop()
