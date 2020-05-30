@@ -1,11 +1,9 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
-window = None
-register = None
-login = None
-
-
+from connection import *
+window = register = login = None
+conn = Connection()
 def iniciarApp():
 	global window, register, login
 	if not(register is None):
@@ -23,12 +21,12 @@ def iniciarApp():
 def menuprincipal():
 	pass	
 def showLogin():
-	global login, register
+	global login, register, conn
 	if not(register is None):
 		register.destroy()
 		register = None
 	login = Tk()
-	centrar(login,400,400) 
+	centrar(login,200,100) 
 	login.resizable(False, False)
 	login.title("Login")
 	usernameLabel = Label(login, text="User Name").grid(row=0, column=0)
@@ -51,7 +49,7 @@ def showRegister():
 		login.destroy()
 		login = None
 	register = Tk()
-	centrar(register,400,400)
+	centrar(register,200,100)
 	register.resizable(False, False)
 	register.title("Registro")
 	usernameLabel = Label(register, text="User Name").grid(row=0, column=0)
@@ -73,4 +71,8 @@ def showRegister():
 	register.mainloop()
 def centrar(window,width, height):
 	window.geometry("{}x{}+{}+{}".format(width,height,int(window.winfo_screenwidth()/2 - width/2),int(window.winfo_screenheight()/2 - height/2)))
-showLogin()
+if(conn.db):
+	print("Conectado")
+	showLogin()
+else:
+	messagebox.showerror("Error", "Fallo en la conexión a la BD")
