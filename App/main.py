@@ -26,7 +26,7 @@ def iniciarApp(id_u):
 	window.resizable(False, False)
 	window.title('My Book Collection')
 	informacionUsuario(id_u)
-	menuprincipal()
+	menuprincipal(id_u)
 	window.mainloop()
 def tab_switch(event):
 	global tabla_galeria, conn
@@ -51,7 +51,7 @@ def actualizarCantidades():
 	usuarioColecValue = Label(infousuario,text=cantidadLibrosObtenidos(conn,id_user)).grid(row=1, column=1)
 	usuarioDeseadValue = Label(infousuario,text=cantidadLibrosDeseados(conn,id_user)).grid(row=1, column=3)
 	usuarioLeidosValue = Label(infousuario,text=cantidadLibrosLeidos(conn,id_user)).grid(row=1, column=5)
-def menuprincipal():
+def menuprincipal(id_u):
 	global notebook, conn, tabla_galeria
 	style = ttk.Style(window)
 	style.configure('lefttab.TNotebook', tabposition='ws')
@@ -63,7 +63,7 @@ def menuprincipal():
 	tab_leidos = ttk.Frame(notebook)
 	tab_salir = ttk.Frame(notebook)
 	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn),"Galeria")
-	tabla_coleccion = crearTabla(tab_coleccion,consultarLibros(conn),"Colección")
+	tabla_coleccion = crearTabla(tab_coleccion,consultarLibrosObtenidos(conn,id_u),"Colección")
 	tabla_deseados = crearTabla(tab_deseados,consultarLibros(conn),"Deseados")
 	tabla_leidos = crearTabla(tab_leidos,consultarLibros(conn),"Leidos")
 	notebook.add(tab_galeria, text='Galeria')
