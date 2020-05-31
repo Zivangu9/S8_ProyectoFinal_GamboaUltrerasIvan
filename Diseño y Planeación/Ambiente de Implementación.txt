@@ -2,6 +2,7 @@ Gestor de Base de Datos - Mysql
 Lenguaje - Python
 	Bibliotecas
 		GUI - Tkinter
+		BD - pymysql
 		Gráficas - matplotlib
 		Reportes - ReportLab
 Editor de Texto - SublimeText3

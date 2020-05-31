@@ -8,7 +8,7 @@ from libros import *
 from usuarios import *
 window = register = login = None
 notebook = None
-tabla_galeria = None
+tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
 id_user = None
 usuarioColecValue = usuarioDeseadValue = usuarioLeidosValue = infousuario = None
 conn = Connection()
@@ -58,11 +58,14 @@ def menuprincipal():
 	style.configure('lefttab.TNotebook.Tab', margin = 10, padding = [10,20])
 	notebook = ttk.Notebook(window, style='lefttab.TNotebook')	
 	tab_galeria = ttk.Frame(notebook)
-	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn),"Galeria")
 	tab_coleccion = ttk.Frame(notebook)
 	tab_deseados = ttk.Frame(notebook)
 	tab_leidos = ttk.Frame(notebook)
 	tab_salir = ttk.Frame(notebook)
+	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn),"Galeria")
+	tabla_coleccion = crearTabla(tab_coleccion,consultarLibros(conn),"Colección")
+	tabla_deseados = crearTabla(tab_deseados,consultarLibros(conn),"Deseados")
+	tabla_leidos = crearTabla(tab_leidos,consultarLibros(conn),"Leidos")
 	notebook.add(tab_galeria, text='Galeria')
 	notebook.add(tab_coleccion, text='Coleccion')
 	notebook.add(tab_deseados, text='Deseados')
