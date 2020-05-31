@@ -11,15 +11,9 @@ INSERT INTO libro VALUES(null,"Harry Potter y el cáliz de fuego","J. K. Rowling
 INSERT INTO libro VALUES(null,"Harry Potter y la Orden del Fénix","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2004,"Harry Potter",893,null,null);
 INSERT INTO libro VALUES(null,"Harry Potter y el misterio del príncipe","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2006,"Harry Potter",602,null,null);
 INSERT INTO libro VALUES(null,"Harry Potter y las reliquias de la Muerte","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2008,"Harry Potter",638,null,null);
-id_libro
-titulo
-autor
-edicion
-publicacion
-idioma
-editorial
-año
-saga
-paginas
-capitulos
-sinopsis
+INSERT INTO libro_leido VALUES(null,1,1,now());
+INSERT INTO libro_obtenido VALUES(null,1,1,now());
+INSERT INTO libro_obtenido VALUES(null,1,3,now());
+INSERT INTO libro_obtenido VALUES(null,1,4,now());
+INSERT INTO libro_deseado VALUES(null,1,2,now());
+INSERT INTO libro_deseado VALUES(null,1,5,now());

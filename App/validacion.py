@@ -1,5 +1,5 @@
 from tkinter import messagebox
-def validarRegistro(nombre, primerapellido, segundoapellido, usuario, password, repassword):
+def validarDatosRegistro(nombre, primerapellido, segundoapellido, usuario, password, repassword):
 	if (any(x.isalpha() for x in nombre) and all(x.isalpha() or x.isspace() for x in nombre)):
 		if (any(x.isalpha() for x in primerapellido) and all(x.isalpha() or x.isspace() for x in primerapellido)):
 			if (any(x.isalpha() for x in segundoapellido) and all(x.isalpha() or x.isspace() for x in segundoapellido)):
@@ -20,7 +20,7 @@ def validarRegistro(nombre, primerapellido, segundoapellido, usuario, password, 
 	else:
 		messagebox.showerror("Nombre Invalido", "El Nombre debe contener solo letras y espacios")
 	return False
-def validarInicioSesion(usuario, password):
+def validarDatosInicioSesion(usuario, password):
 	if (any(x.isalpha() for x in usuario) and all(x.isalpha() for x in usuario)):
 		if (len(password)>3):
 			return True
