@@ -22,7 +22,7 @@ def iniciarApp(id_u):
 		login.destroy()
 		login = None
 	window = Tk()
-	centrar(window,600,700) 
+	centrar(window,1000,700) 
 	window.resizable(False, False)
 	window.title('My Book Collection')
 	informacionUsuario(id_u)
@@ -33,7 +33,7 @@ def tab_switch(event):
 	if notebook.tab(notebook.select(), "text") == "Salir":
 		id_user = None
 		showLogin()
-	if notebook.tab(notebook.select(), "text") == "Galeria":
+	if notebook.tab(notebook.select(), "text") == "Galería":
 		actualizarTabla(tabla_galeria,consultarLibros(conn))
 def informacionUsuario(id_u):
 	global usuarioColecValue, usuarioDeseadValue, usuarioLeidosValue, infousuario, id_user
@@ -45,7 +45,9 @@ def informacionUsuario(id_u):
 	usuarioLeidosLabel = Label(infousuario,text="Libros Leidos:").grid(row=1, column=4)  
 	usuarioValue = Label(infousuario,text=consultarNombre(conn,id_u)).grid(row=0, column=1, columnspan=4)
 	actualizarCantidades()
-		
+def treeViewListener(event):
+	tree = event.widget
+	showLibro(tree.item(tree.selection(),'text'))
 def actualizarCantidades():
 	global usuarioColecValue, usuarioDeseadValue, usuarioLeidosValue, infousuario, id_user
 	usuarioColecValue = Label(infousuario,text=cantidadLibrosObtenidos(conn,id_user)).grid(row=1, column=1)
@@ -62,18 +64,29 @@ def menuprincipal(id_u):
 	tab_deseados = ttk.Frame(notebook)
 	tab_leidos = ttk.Frame(notebook)
 	tab_salir = ttk.Frame(notebook)
-	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn),"Galeria")
+	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn),"Galería")
 	tabla_coleccion = crearTabla(tab_coleccion,consultarLibrosObtenidos(conn,id_u),"Colección")
 	tabla_deseados = crearTabla(tab_deseados,consultarLibrosDeseados(conn,id_u),"Deseados")
-	tabla_leidos = crearTabla(tab_leidos,consultarLibros(conn),"Leidos")
-	notebook.add(tab_galeria, text='Galeria')
+	tabla_leidos = crearTabla(tab_leidos,consultarLibrosLeidos(conn,id_u),"Leídos")
+	tabla_galeria.bind('<<TreeviewSelect>>',treeViewListener)
+	tabla_coleccion.bind('<<TreeviewSelect>>',treeViewListener)
+	tabla_deseados.bind('<<TreeviewSelect>>',treeViewListener)
+	tabla_leidos.bind('<<TreeviewSelect>>',treeViewListener)
+	notebook.add(tab_galeria, text='Galería')
 	notebook.add(tab_coleccion, text='Coleccion')
 	notebook.add(tab_deseados, text='Deseados')
-	notebook.add(tab_leidos, text='Leidos')
+	notebook.add(tab_leidos, text='Leídos')
 	notebook.add(tab_salir, text='Salir')
 	notebook.pack(expand=1, fill='both')	
 	notebook.bind('<ButtonRelease-1>',tab_switch)
 
+def showLibro(id_libro):
+	global window, conn, id_user
+	libro = Tk()
+	centrar(libro,700,800) 
+	libro.resizable(False, False)
+	libro.title("Libro")
+	print(id_libro)
 def showLogin():	
 	global window, login, register, conn, id_user
 	if not(register is None):

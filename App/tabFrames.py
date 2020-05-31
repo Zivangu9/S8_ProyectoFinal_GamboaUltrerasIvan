@@ -12,9 +12,6 @@ def crearTabla(tab,rows,nombre):
 	hsb = ttk.Scrollbar(tab, orient="horizontal", command=tree.xview)
 	hsb.pack(side='bottom', fill='x')
 	tree.configure(xscrollcommand=hsb.set, yscrollcommand=vsb.set)
-	def treeViewListener(event):
-		print(tree.item(tree.selection(),'text'))
-	tree.bind('<<TreeviewSelect>>',treeViewListener)
 	for header in headers:
 		tree.heading(header, text=header.title())
 	for i in range(len(rows)):
