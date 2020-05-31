@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `book_collection`.`libro` (
   `publicacion` VARCHAR(25) NULL DEFAULT NULL,
   `idioma` VARCHAR(20) NOT NULL,
   `editorial` VARCHAR(40) NOT NULL,
-  `año` TINYINT NOT NULL,
+  `año` SMALLINT NOT NULL,
   `saga` VARCHAR(50) NULL DEFAULT NULL,
   `paginas` SMALLINT NULL DEFAULT NULL,
   `capitulos` TINYINT NULL DEFAULT NULL,

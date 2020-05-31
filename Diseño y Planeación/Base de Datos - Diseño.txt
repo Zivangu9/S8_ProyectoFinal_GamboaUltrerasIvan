@@ -1,0 +1,35 @@
+libro
+	id_libro
+	titulo
+	autores
+	edicion
+	publicacion
+	idioma
+	editorial
+	año
+	saga
+	paginas
+	capitulos
+	sinopsis
+usuario
+	id_usuario
+	nombre
+	primer_apellido
+	segundo_apellido
+	usuario
+	clave
+libro_leido
+	id_leido
+	id_usuario
+	id_libro
+	fecha
+libro_obtenido
+	id_obtenido
+	id_usuario
+	id_libro
+	fecha
+libro_deseado
+	id_deseado
+	id_usuario
+	id_libro
+	fecha

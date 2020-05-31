@@ -3,9 +3,13 @@ from tkinter import messagebox
 from tkinter import ttk
 from connection import *
 from validacion import *
+from tabFrames import *
+from libros import *
 window = register = login = None
+notebook = None
+tabla_galeria = None
 conn = Connection()
-def iniciarApp():
+def iniciarApp(nombre):
 	global window, register, login
 	if not(register is None):
 		register.destroy()
@@ -16,33 +20,62 @@ def iniciarApp():
 	window = Tk()
 	centrar(window,600,700) 
 	window.resizable(False, False)
-	window.title("My Book Collection")
+	window.title('My Book Collection')
 	menuprincipal()
 	window.mainloop()
+def tab_switch(event):
+	global tabla_galeria, conn
+	if notebook.tab(notebook.select(), "text") == "Salir":
+		showLogin()
+	if notebook.tab(notebook.select(), "text") == "Galeria":
+		actualizarTabla(tabla_galeria,consultarLibros(conn))
+		#notebook.tab(notebook.select()).update()
 def menuprincipal():
-	pass	
-def showLogin():
-	global login, register, conn
+	global notebook, conn, tabla_galeria
+	style = ttk.Style(window)
+	style.configure('lefttab.TNotebook', tabposition='ws')
+	style.configure('lefttab.TNotebook.Tab', margin = 10, padding = [10,20])
+	notebook = ttk.Notebook(window, style='lefttab.TNotebook')	
+	tab_galeria = ttk.Frame(notebook)
+	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn))
+	tab_coleccion = ttk.Frame(notebook)
+	tab_deseados = ttk.Frame(notebook)
+	tab_leidos = ttk.Frame(notebook)
+	tab_salir = ttk.Frame(notebook,)
+	notebook.add(tab_galeria, text='Galeria')
+	notebook.add(tab_coleccion, text='Coleccion')
+	notebook.add(tab_deseados, text='Deseados')
+	notebook.add(tab_leidos, text='Leidos')
+	notebook.add(tab_salir, text='Salir')
+	notebook.pack(expand=1, fill='both')	
+	notebook.bind('<ButtonRelease-1>',tab_switch)
+
+def showLogin():	
+	global window, login, register, conn
 	if not(register is None):
 		register.destroy()
 		register = None
+	if not(window is None):
+		window.destroy()
+		window = None
 	login = Tk()
-	centrar(login,200,100) 
+	centrar(login,200,80) 
 	login.resizable(False, False)
-	login.title("Login")
-	usernameLabel = Label(login, text="User Name").grid(row=0, column=0)
+	login.title("Login")	
+	usernameLabel = Label(login, text="Usuario").grid(row=0, column=0)
 	username = StringVar()
 	usernameEntry = Entry(login, textvariable=username).grid(row=0, column=1)  
-	passwordLabel = Label(login,text="Password").grid(row=1, column=0)  
+	passwordLabel = Label(login,text="Contraseña").grid(row=1, column=0)  
 	password = StringVar()
 	passwordEntry = Entry(login, textvariable=password, show='*').grid(row=1, column=1)
 	def iniciarSesion():
 		sql_select_query = """ SELECT * FROM usuario WHERE usuario = %s AND clave = SHA1(%s)"""
 		if validarInicioSesion(username.get(),password.get()):
 			conn.cursor.execute(sql_select_query,(username.get(),password.get()))
-			rows = conn.cursor.fetchall()
+			rows = conn.cursor.fetchall()		
 			if (len(rows)==1):
-				iniciarApp()
+				nom = rows[0][1],rows[0][2],rows[0][3]
+				iniciarApp(nom)
 			else:
 				messagebox.showerror("Error", "Usuario o Contraseña Incorrectos")
 	registerButton = Button(login, text="Register", command=showRegister).grid(row=2, column=0,sticky=W+E) 
@@ -55,7 +88,7 @@ def showRegister():
 		login.destroy()
 		login = None
 	register = Tk()
-	centrar(register,200,200)
+	centrar(register,260,170)
 	register.resizable(False, False)
 	register.title("Registro")
 	nombreEtiqueta = Label(register, text="Nombre").grid(row=0, column=0)
@@ -68,7 +101,7 @@ def showRegister():
 	segundoApe = StringVar()
 	segundoApeEntry = Entry(register, textvariable=segundoApe).grid(row=2, column=1)
 	usernameLabel = Label(register, text="Usuairo").grid(row=3, column=0)
-	username = StringVar()
+	username = StringVar()	
 	usernameEntry = Entry(register, textvariable=username).grid(row=3, column=1)  
 	passwordLabel = Label(register,text="Contraseña").grid(row=4, column=0)  
 	password = StringVar()
@@ -83,7 +116,8 @@ def showRegister():
 			try:
 				conn.cursor.execute(sql_insert_query,(nombre.get(),primerApe.get(),segundoApe.get(),username.get(),password.get()))
 				conn.db.commit()
-				iniciarApp()
+				nom = nombre.get(),primerApe.get(),segundoApe.get();
+				iniciarApp(nom)
 			except:
 				messagebox.showerror("Error Usuario", "Ese Usuario ya existe")
 				do.rollback()	
