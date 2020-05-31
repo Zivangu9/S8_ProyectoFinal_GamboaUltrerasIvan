@@ -85,9 +85,13 @@ def menuprincipal(id_u):
 def showLibro(id_libro):
 	global window, conn, id_user
 	libro = Tk()
-	centrar(libro,500,400) 
+	centrar(libro,550,400) 
 	libro.resizable(False, False)
 	libro.title("Libro")
+	botones = Frame(libro)
+	btnObtenido = Button(botones,text="Agregar Coleccion").grid(row=0)
+	btnDeseado = Button(botones,text="Agregar Deseados").grid(row=1)
+	btnLeido = Button(botones,text="Agregar Leidos").grid(row=2)
 	tituloEtiqueta = Label(libro,text="Titulo: ").grid(row=0, column=0)
 	autorEtiqueta = Label(libro,text="Autor: ").grid(row=1, column=0)
 	edicionEtiqueta = Label(libro,text="Edicion: ").grid(row=2, column=0)
@@ -99,12 +103,12 @@ def showLibro(id_libro):
 	paginasEtiqueta = Label(libro,text="Paginas: ").grid(row=8, column=0)
 	capitulosEtiqueta = Label(libro,text="Capitulos: ").grid(row=9, column=0)
 	sinopsisEtiqueta = Label(libro,text="Sinopsis: ").grid(row=10, column=0)
-	def acomodarSaltosLinea(text):
+	def acomodarSaltosLinea(text,characters):
 		if text is None:
 			return ""
-		return textwrap.fill(text, width=35)
+		return textwrap.fill(text, width=characters)
 	datos = consultarLibro(conn,id_libro)[0]
-	titulo = Label(libro,text=datos[1]).grid(row=0, column=1)
+	titulo = Label(libro,text=acomodarSaltosLinea(datos[1],50)).grid(row=0, column=1)
 	autor = Label(libro,text=datos[2]).grid(row=1, column=1)
 	edicion = Label(libro,text=datos[3]).grid(row=2, column=1)
 	publicacion = Label(libro,text=datos[4]).grid(row=3, column=1)
@@ -115,10 +119,10 @@ def showLibro(id_libro):
 	paginas = Label(libro,text=datos[9]).grid(row=8, column=1)
 	capitulos = Label(libro,text=datos[10]).grid(row=9, column=1)
 	sinopsis = ScrolledText(libro, width=40,height=8)
-	sinopsis.insert("1.0", acomodarSaltosLinea(datos[11]))
+	sinopsis.insert("1.0", acomodarSaltosLinea(datos[11],35))
 	sinopsis.config(state=DISABLED)
 	sinopsis.grid(row=10, column=1)
-	
+	botones.grid(row=0,column=2,rowspan=11)
 def showLogin():	
 	global window, login, register, conn, id_user
 	if not(register is None):
@@ -166,7 +170,7 @@ def showRegister():
 	segundoApeEtiqueta = Label(register,text="Segundo Apellido").grid(row=2, column=0)  
 	segundoApe = StringVar()
 	segundoApeEntry = Entry(register, textvariable=segundoApe).grid(row=2, column=1)
-	usernameLabel = Label(register, text="Usuairo").grid(row=3, column=0)
+	usernameLabel = Label(register, text="Usuario").grid(row=3, column=0)
 	username = StringVar()	
 	usernameEntry = Entry(register, textvariable=username).grid(row=3, column=1)  
 	passwordLabel = Label(register,text="Contraseña").grid(row=4, column=0)  
