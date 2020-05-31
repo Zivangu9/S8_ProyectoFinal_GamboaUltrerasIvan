@@ -64,7 +64,7 @@ def menuprincipal(id_u):
 	tab_salir = ttk.Frame(notebook)
 	tabla_galeria = crearTabla(tab_galeria,consultarLibros(conn),"Galeria")
 	tabla_coleccion = crearTabla(tab_coleccion,consultarLibrosObtenidos(conn,id_u),"Colección")
-	tabla_deseados = crearTabla(tab_deseados,consultarLibros(conn),"Deseados")
+	tabla_deseados = crearTabla(tab_deseados,consultarLibrosDeseados(conn,id_u),"Deseados")
 	tabla_leidos = crearTabla(tab_leidos,consultarLibros(conn),"Leidos")
 	notebook.add(tab_galeria, text='Galeria')
 	notebook.add(tab_coleccion, text='Coleccion')

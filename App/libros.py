@@ -14,7 +14,7 @@ def consultarLibrosObtenidos(conn,id_usuario):
 	conn.cursor.execute(sql_select_query,id_usuario)
 	return conn.cursor.fetchall()
 def consultarLibrosDeseados(conn, id_usuario):
-	sql_select_query = """SELECT * FROM libro_deseado WHERE id_usuario = %s"""
+	sql_select_query = """SELECT libro.id_libro,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_deseado, libro WHERE libro_deseado.id_libro = libro.id_libro and id_usuario = %s"""
 	conn.cursor.execute(sql_select_query,id_usuario)
 	return conn.cursor.fetchall()	
 def consultarLibrosLeidos(conn, id_usuario):
