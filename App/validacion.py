@@ -3,7 +3,7 @@ def validarDatosRegistro(nombre, primerapellido, segundoapellido, usuario, passw
 	if (any(x.isalpha() for x in nombre) and all(x.isalpha() or x.isspace() for x in nombre)):
 		if (any(x.isalpha() for x in primerapellido) and all(x.isalpha() or x.isspace() for x in primerapellido)):
 			if (any(x.isalpha() for x in segundoapellido) and all(x.isalpha() or x.isspace() for x in segundoapellido)):
-				if (any(x.isalpha() for x in usuario) and all(x.isalpha() for x in usuario)):
+				if (any(x.isalpha() for x in usuario) and all(x.isalpha() or x.isdigit() for x in usuario)):
 					if (len(password)>3):
 						if password == repassword:
 							return True
@@ -21,7 +21,7 @@ def validarDatosRegistro(nombre, primerapellido, segundoapellido, usuario, passw
 		messagebox.showerror("Nombre Invalido", "El Nombre debe contener solo letras y espacios")
 	return False
 def validarDatosInicioSesion(usuario, password):
-	if (any(x.isalpha() for x in usuario) and all(x.isalpha() for x in usuario)):
+	if (any(x.isalpha() for x in usuario) and all(x.isalpha() or x.isdigit() for x in usuario)):
 		if (len(password)>3):
 			return True
 		else:

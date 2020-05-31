@@ -6,6 +6,8 @@ from validacion import *
 from tabFrames import *
 from libros import *
 from usuarios import *
+import textwrap
+from tkinter.scrolledtext import *
 window = register = login = None
 notebook = None
 tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
@@ -83,10 +85,40 @@ def menuprincipal(id_u):
 def showLibro(id_libro):
 	global window, conn, id_user
 	libro = Tk()
-	centrar(libro,700,800) 
+	centrar(libro,500,400) 
 	libro.resizable(False, False)
 	libro.title("Libro")
-	print(id_libro)
+	tituloEtiqueta = Label(libro,text="Titulo: ").grid(row=0, column=0)
+	autorEtiqueta = Label(libro,text="Autor: ").grid(row=1, column=0)
+	edicionEtiqueta = Label(libro,text="Edicion: ").grid(row=2, column=0)
+	publicacionEtiqueta = Label(libro,text="Publicacion: ").grid(row=3, column=0)
+	idiomaEtiqueta = Label(libro,text="Idioma: ").grid(row=4, column=0)
+	editorialEtiqueta = Label(libro,text="Editorial: ").grid(row=5, column=0)
+	añoEtiqueta = Label(libro,text="Año: ").grid(row=6, column=0)
+	sagaEtiqueta = Label(libro,text="Saga: ").grid(row=7, column=0)
+	paginasEtiqueta = Label(libro,text="Paginas: ").grid(row=8, column=0)
+	capitulosEtiqueta = Label(libro,text="Capitulos: ").grid(row=9, column=0)
+	sinopsisEtiqueta = Label(libro,text="Sinopsis: ").grid(row=10, column=0)
+	def acomodarSaltosLinea(text):
+		if text is None:
+			return ""
+		return textwrap.fill(text, width=35)
+	datos = consultarLibro(conn,id_libro)[0]
+	titulo = Label(libro,text=datos[1]).grid(row=0, column=1)
+	autor = Label(libro,text=datos[2]).grid(row=1, column=1)
+	edicion = Label(libro,text=datos[3]).grid(row=2, column=1)
+	publicacion = Label(libro,text=datos[4]).grid(row=3, column=1)
+	idioma = Label(libro,text=datos[5]).grid(row=4, column=1)
+	editorial = Label(libro,text=datos[6]).grid(row=5, column=1)
+	año = Label(libro,text=datos[7]).grid(row=6, column=1)
+	saga = Label(libro,text=datos[8]).grid(row=7, column=1)
+	paginas = Label(libro,text=datos[9]).grid(row=8, column=1)
+	capitulos = Label(libro,text=datos[10]).grid(row=9, column=1)
+	sinopsis = ScrolledText(libro, width=40,height=8)
+	sinopsis.insert("1.0", acomodarSaltosLinea(datos[11]))
+	sinopsis.config(state=DISABLED)
+	sinopsis.grid(row=10, column=1)
+	
 def showLogin():	
 	global window, login, register, conn, id_user
 	if not(register is None):
