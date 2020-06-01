@@ -17,6 +17,7 @@ tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
 id_user = id_libro = None
 usuarioColecValue = usuarioDeseadValue = usuarioLeidosValue = infousuario = None
 btnObtenido = btnDeseado = btnLeido = None
+btnGrafica = btnReporte = None
 conn = Connection()
 def destroyAll():
 	global window, register, login, libro, admin
@@ -75,14 +76,19 @@ def iniciarApp(id_u):
 	informacionUsuario(id_u)
 	menuprincipal(id_u)
 	window.protocol("WM_DELETE_WINDOW", destroyAll)
-
 	text = Text(window,font = ("Bookman Old Style",12))
 	window.mainloop()
 def tab_switch(event):
-	global tabla_galeria, conn
+	global tabla_galeria, conn,btnGrafica, btnReporte
 	if notebook.tab(notebook.select(), "text") == "Salir":
 		id_user = None
 		showLogin()
+	if notebook.tab(notebook.select(), "text") == "Galería" or notebook.tab(notebook.select(), "text") == "Deseados":
+		btnGrafica.grid_forget()
+		btnReporte.grid_forget()
+	else:
+		btnGrafica.grid(row=0,column=0,padx=(10,10),pady=(10,10))
+		btnReporte.grid(row=0,column=1,padx=(10,10),pady=(10,10))
 	actualizarInformacion()
 def actualizarInformacion():
 	global tabla_galeria, tabla_coleccion, tabla_deseados, tabla_leidos, id_user
@@ -92,9 +98,9 @@ def actualizarInformacion():
 	actualizarTablaLista(tabla_leidos,consultarLibrosLeidos(conn,id_user))
 	actualizarCantidades()
 def informacionUsuario(id_u):
-	global usuarioColecValue, usuarioDeseadValue, usuarioLeidosValue, infousuario, id_user
+	global usuarioColecValue, usuarioDeseadValue, usuarioLeidosValue, infousuario, id_user, window
 	infousuario = Frame(window)
-	infousuario.pack(side = TOP)
+	infousuario.grid(row=0,column=0)
 	nombreFrame = Frame(infousuario)
 	nombreFrame.grid(row=0,columnspan=6)
 	usuarioLabel = Label(nombreFrame,text="Usuario:",anchor="e",width=12).grid(row=0, column=0)  
@@ -112,11 +118,26 @@ def actualizarCantidades():
 	usuarioDeseadValue = Label(infousuario,text=cantidadLibrosDeseados(conn,id_user)).grid(row=1, column=3)
 	usuarioLeidosValue = Label(infousuario,text=cantidadLibrosLeidos(conn,id_user)).grid(row=1, column=5)
 def menuprincipal(id_u):
-	global notebook, conn, tabla_galeria, tabla_coleccion, tabla_deseados, tabla_leidos, font
+	global notebook, conn, tabla_galeria, tabla_coleccion, tabla_deseados, tabla_leidos, font, window
+	global btnGrafica, btnReporte
+	def crearGrafica():
+		print("Graficando")
+	def crearReporte():
+		print("Reportando")
+	botonesGenerar = Frame(window,width=193, height = 106)
+	botonesGenerar.grid(row=0,column=1)
+	iconGrafica = PhotoImage(file="img/grafica.png")
+	iconGrafica = iconGrafica.subsample(10, 10)
+	btnGrafica = Button(botonesGenerar,text = "Graficar",image=iconGrafica,compound=TOP,command=crearGrafica)
+	btnGrafica.grid(row=0,column=0,padx=(10,10),pady=(10,10))
+	iconReporte = PhotoImage(file="img/reporte.png")
+	iconReporte = iconReporte.subsample(10, 10)
+	btnReporte = Button(botonesGenerar,text = "Reporte",image=iconReporte,compound=TOP,command=crearReporte)
+	btnReporte.grid(row=0,column=1,padx=(10,10),pady=(10,10))
 	style = ttk.Style(window)
 	style.configure('lefttab.TNotebook', tabposition='ws')
 	style.configure('lefttab.TNotebook.Tab', margin = 10, padding = [10,20])
-	notebook = ttk.Notebook(window, style='lefttab.TNotebook')
+	notebook = ttk.Notebook(window, style='lefttab.TNotebook',width=900,height=500)
 	tab_galeria = ttk.Frame(notebook)
 	tab_coleccion = ttk.Frame(notebook)
 	tab_deseados = ttk.Frame(notebook)
@@ -135,8 +156,9 @@ def menuprincipal(id_u):
 	notebook.add(tab_deseados, text='Deseados')
 	notebook.add(tab_leidos, text='Leídos')
 	notebook.add(tab_salir, text='Salir')
-	notebook.pack(expand=1, fill='both')	
-	notebook.bind('<ButtonRelease-1>',tab_switch)
+	notebook.grid(row=1,column=0,columnspan=2)	
+	notebook.bind('<<NotebookTabChanged>>',tab_switch)
+	Button(botonesGenerar).pack()#Error que hace funcionar los botones
 def showAdminLista(lista,accion,id_lib):
 	global admin, conn, id_user, font
 	global btnObtenido,btnDeseado,btnLeido
