@@ -132,7 +132,7 @@ def menuprincipal(id_u):
 	notebook.pack(expand=1, fill='both')	
 	notebook.bind('<ButtonRelease-1>',tab_switch)
 def showAdminLista(lista,accion,id_lib):
-	global admin, id_libro
+	global admin, conn, id_user
 	global btnObtenido,btnDeseado,btnLeido
 	if not(admin is None):
 		try:
@@ -144,11 +144,20 @@ def showAdminLista(lista,accion,id_lib):
 	centrar(admin,300,200) 
 	admin.resizable(False, False)
 	admin.title(accion+" "+lista)
-	datos = consultarLibro(conn,id_libro)[0]
+	datos = consultarLibro(conn,id_lib)[0]
 	Label(admin,text="Titulo: ").grid(row=0, column=0)
 	Label(admin,text=datos[1]).grid(row=0, column=1)
 	Label(admin,text="Fecha: ").grid(row=1, column=0)
+	f = None
+	if lista == "Coleccion":
+		f = consultarFechaColeccion(conn,id_user,id_lib)
+	if lista == "Deseados":
+		f = consultarFechaDeseado(conn,id_user,id_lib)
+	if lista == "Leidos":
+		f = consultarFechaLeido(conn,id_user,id_lib)
 	cal = DateEntry(admin,width=30,bg="darkblue",fg="white",locale='es_MX')
+	if not(f is None):
+		cal.set_date(f)
 	cal.grid(row=1, column = 1)
 	def agregarLibro(event):
 		global conn, id_user
@@ -159,9 +168,30 @@ def showAdminLista(lista,accion,id_lib):
 				eliminarLibroDeseado(conn,id_user,id_lib)
 				btnDeseado['text'] = "Agregar Deseados"
 		if lista == "Deseados":
-			btnDeseado["text"] = "Editar Deseados"
+			if agregarLibroDeseado(conn,id_user,id_lib,cal.get_date()):
+				btnDeseado["text"] = "Editar Deseados"
 		if lista == "Leidos":
-			btnLeido["text"] = "Editar Leidos"
+			if agregarLibroLeido(conn,id_user,id_lib,cal.get_date()):
+				btnLeido["text"] = "Editar Leidos"
+		actualizarInformacion()
+	def guardarLibro(event):
+		if lista == "Coleccion":
+			editarLibroColeccion(conn,id_user,id_lib,cal.get_date())
+		if lista == "Deseados":
+			editarLibroDeseado(conn,id_user,id_lib,cal.get_date())
+		if lista == "Leidos":
+			editarLibroLeido(conn,id_user,id_lib,cal.get_date())
+		actualizarInformacion()
+	def eliminarLibro(event):
+		if lista == "Coleccion":
+			if eliminarLibroColeccion(conn,id_user,id_lib):
+				btnObtenido["text"] = "Agregar Coleccion"
+		if lista == "Deseados":
+			if eliminarLibroDeseado(conn,id_user,id_lib):
+				btnDeseado["text"] = "Agregar Deseados"
+		if lista == "Leidos":
+			if eliminarLibroLeido(conn,id_user,id_lib):
+				btnLeido["text"] = "Agregar Leidos"
 		actualizarInformacion()
 	botones = Frame(admin)
 	botones.grid(row=3,column=0, columnspan=2)
@@ -172,7 +202,12 @@ def showAdminLista(lista,accion,id_lib):
 		btnAgregar.bind('<ButtonRelease-1>',agregarLibro)
 		btnAgregar.grid(row = 0,column=1)
 	if accion == "Administrar":
-		pass
+		btnGuardar = Button(botones,text="Guardar",command=admin.destroy)
+		btnGuardar.bind('<ButtonRelease-1>',guardarLibro)
+		btnGuardar.grid(row = 0,column=1)
+		btnEliminar = Button(botones,text="Eliminar",command=admin.destroy)
+		btnEliminar.bind('<ButtonRelease-1>',eliminarLibro)
+		btnEliminar.grid(row = 0,column=2)
 def showLibro(id_lib):
 	global window, conn, id_user, libro, admin, id_libro
 	global btnObtenido,btnDeseado,btnLeido
@@ -195,6 +230,7 @@ def showLibro(id_lib):
 	libro.title("Libro")
 	botones = Frame(libro)
 	def adminLista(event):
+		global libro
 		btn = event.widget
 		lis = ""
 		accion = ""
@@ -208,19 +244,24 @@ def showLibro(id_lib):
 			lis = "Deseados"
 		if "Leidos" in btn['text']:
 			lis = "Leidos"
+		if accion == "Agregar" and lis == "Deseados":
+			if isLibroColeccion(conn,id_user,id_lib):
+				messagebox.showinfo("Info Existencia", "Ya tienes este libro en tu Colección")
+				libro.lift()
+				return
 		showAdminLista(lis,accion,id_lib)
 	if isLibroColeccion(conn, id_user,id_lib):
 		btnObtenido = Button(botones,text="Editar Coleccion")
 	else:
 		btnObtenido = Button(botones,text="Agregar Coleccion")
 	if isLibroDeseado(conn, id_user,id_lib):
-		btnDeseado = Button(botones,text="Editar Coleccion")
+		btnDeseado = Button(botones,text="Editar Deseados")
 	else:
-		btnDeseado = Button(botones,text="Agregar Coleccion")
+		btnDeseado = Button(botones,text="Agregar Deseados")
 	if isLibroLeido(conn, id_user,id_lib):
-		btnLeido = Button(botones,text="Editar Coleccion")
+		btnLeido = Button(botones,text="Editar Leidos")
 	else:
-		btnLeido = Button(botones,text="Agregar Coleccion")
+		btnLeido = Button(botones,text="Agregar Leidos")
 	btnObtenido.bind('<ButtonRelease-1>',adminLista)
 	btnDeseado.bind('<ButtonRelease-1>',adminLista)
 	btnLeido.bind('<ButtonRelease-1>',adminLista)
