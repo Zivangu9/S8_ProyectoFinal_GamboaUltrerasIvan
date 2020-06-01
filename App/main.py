@@ -8,13 +8,16 @@ from libros import *
 from usuarios import *
 import textwrap
 from tkinter.scrolledtext import *
+from tkcalendar import *
+from datetime import *
 window = register = login = libro = admin =None
 notebook = None
 tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
-id_user = None
+id_user = id_libro = None
 usuarioColecValue = usuarioDeseadValue = usuarioLeidosValue = infousuario = None
+btnObtenido = btnDeseado = btnLeido = None
 conn = Connection()
-def destryAll():
+def destroyAll():
 	global window, register, login, libro, admin
 	if not(register is None):
 		try:
@@ -41,6 +44,19 @@ def destryAll():
 			window.destroy()
 		except:
 			pass
+def cerrarAdmin():
+	global libro, admin
+	if not(admin is None):
+		try:
+			admin.destroy()
+		except:
+			pass
+	if not(libro is None):
+		try:
+			libro.destroy()
+		except:
+			pass
+		libro = None
 def iniciarApp(id_u):
 	global window, register, login, id_user
 	id_user = id_u
@@ -56,7 +72,7 @@ def iniciarApp(id_u):
 	window.title('My Book Collection')
 	informacionUsuario(id_u)
 	menuprincipal(id_u)
-	window.protocol("WM_DELETE_WINDOW", destryAll)
+	window.protocol("WM_DELETE_WINDOW", destroyAll)
 	window.mainloop()
 def tab_switch(event):
 	global tabla_galeria, conn
@@ -109,9 +125,9 @@ def menuprincipal(id_u):
 	notebook.add(tab_salir, text='Salir')
 	notebook.pack(expand=1, fill='both')	
 	notebook.bind('<ButtonRelease-1>',tab_switch)
-
-def showAdminLista(lista, id_libro):
-	global admin
+def showAdminLista(lista,accion,id_lib):
+	global admin, id_libro
+	global btnObtenido,btnDeseado,btnLeido
 	if not(admin is None):
 		try:
 			admin.destroy()
@@ -121,10 +137,46 @@ def showAdminLista(lista, id_libro):
 	admin = Tk()
 	centrar(admin,300,200) 
 	admin.resizable(False, False)
-	admin.title(lista)
-
-def showLibro(id_libro):
-	global window, conn, id_user, libro
+	admin.title(accion+" "+lista)
+	datos = consultarLibro(conn,id_libro)[0]
+	Label(admin,text="Titulo: ").grid(row=0, column=0)
+	Label(admin,text=datos[1]).grid(row=0, column=1)
+	Label(admin,text="Fecha: ").grid(row=1, column=0)
+	cal = DateEntry(admin,width=30,bg="darkblue",fg="white",locale='es_MX')
+	cal.grid(row=1, column = 1)
+	print()
+	def agregarLibro(event):
+		global conn, id_user
+		if lista == "Coleccion":
+			if agregarLibroColeccion(conn,id_user,id_lib,cal.get_date()):
+				btnObtenido["text"] = "Editar Coleccion"
+			if True:
+				eliminarLibroDeseado(conn,id_user,id_lib)
+				btnDeseado['text'] = "Agregar Deseados"
+		if lista == "Deseados":
+			btnDeseado["text"] = "Editar Deseados"
+		if lista == "Leidos":
+			btnLeido["text"] = "Editar Leidos"
+	botones = Frame(admin)
+	botones.grid(row=3,column=0, columnspan=2)
+	btnCancelar = Button(botones,text="Cancelar",command=admin.destroy)
+	btnCancelar.grid(row = 0,column=0)
+	print(accion == "Agregar")
+	if accion == "Agregar":
+		btnAgregar = Button(botones,text="Agregar",command=admin.destroy)
+		btnAgregar.bind('<ButtonRelease-1>',agregarLibro)
+		btnAgregar.grid(row = 0,column=1)
+	if accion == "Administrar":
+		pass
+def showLibro(id_lib):
+	global window, conn, id_user, libro, admin, id_libro
+	global btnObtenido,btnDeseado,btnLeido
+	id_libro = id_lib
+	if not(admin is None):
+		try:
+			admin.destroy()
+		except:
+			pass
 	if not(libro is None):
 		try:
 			libro.destroy()
@@ -132,6 +184,7 @@ def showLibro(id_libro):
 			pass
 		libro = None
 	libro = Tk()
+	libro.protocol("WM_DELETE_WINDOW", cerrarAdmin)
 	centrar(libro,550,400) 
 	libro.resizable(False, False)
 	libro.title("Libro")
@@ -139,13 +192,18 @@ def showLibro(id_libro):
 	def adminLista(event):
 		btn = event.widget
 		lis = ""
+		accion = ""
+		if "Agregar" in btn['text']:
+			accion = "Agregar"
+		if "Editar" in btn['text']:
+			accion = "Administrar"
 		if "Coleccion" in btn['text']:
 			lis = "Coleccion"
 		if "Deseados" in btn['text']:
 			lis = "Deseados"
 		if "Leidos" in btn['text']:
 			lis = "Leidos"
-		showAdminLista(lis,id_libro)
+		showAdminLista(lis,accion,id_lib)
 	btnObtenido = Button(botones,text="Agregar Coleccion")
 	btnDeseado = Button(botones,text="Agregar Deseados")
 	btnLeido = Button(botones,text="Agregar Leidos")
@@ -155,32 +213,32 @@ def showLibro(id_libro):
 	btnObtenido.grid(row=0)
 	btnDeseado.grid(row=1)
 	btnLeido.grid(row=2)
-	tituloEtiqueta = Label(libro,text="Titulo: ").grid(row=0, column=0)
-	autorEtiqueta = Label(libro,text="Autor: ").grid(row=1, column=0)
-	edicionEtiqueta = Label(libro,text="Edicion: ").grid(row=2, column=0)
-	publicacionEtiqueta = Label(libro,text="Publicacion: ").grid(row=3, column=0)
-	idiomaEtiqueta = Label(libro,text="Idioma: ").grid(row=4, column=0)
-	editorialEtiqueta = Label(libro,text="Editorial: ").grid(row=5, column=0)
-	añoEtiqueta = Label(libro,text="Año: ").grid(row=6, column=0)
-	sagaEtiqueta = Label(libro,text="Saga: ").grid(row=7, column=0)
-	paginasEtiqueta = Label(libro,text="Paginas: ").grid(row=8, column=0)
-	capitulosEtiqueta = Label(libro,text="Capitulos: ").grid(row=9, column=0)
-	sinopsisEtiqueta = Label(libro,text="Sinopsis: ").grid(row=10, column=0)
+	Label(libro,text="Titulo: ").grid(row=0, column=0)
+	Label(libro,text="Autor: ").grid(row=1, column=0)
+	Label(libro,text="Edicion: ").grid(row=2, column=0)
+	Label(libro,text="Publicacion: ").grid(row=3, column=0)
+	Label(libro,text="Idioma: ").grid(row=4, column=0)
+	Label(libro,text="Editorial: ").grid(row=5, column=0)
+	Label(libro,text="Año: ").grid(row=6, column=0)
+	Label(libro,text="Saga: ").grid(row=7, column=0)
+	Label(libro,text="Paginas: ").grid(row=8, column=0)
+	Label(libro,text="Capitulos: ").grid(row=9, column=0)
+	Label(libro,text="Sinopsis: ").grid(row=10, column=0)
 	def acomodarSaltosLinea(text,characters):
 		if text is None:
 			return ""
 		return textwrap.fill(text, width=characters)
 	datos = consultarLibro(conn,id_libro)[0]
-	titulo = Label(libro,text=acomodarSaltosLinea(datos[1],50)).grid(row=0, column=1)
-	autor = Label(libro,text=datos[2]).grid(row=1, column=1)
-	edicion = Label(libro,text=datos[3]).grid(row=2, column=1)
-	publicacion = Label(libro,text=datos[4]).grid(row=3, column=1)
-	idioma = Label(libro,text=datos[5]).grid(row=4, column=1)
-	editorial = Label(libro,text=datos[6]).grid(row=5, column=1)
-	año = Label(libro,text=datos[7]).grid(row=6, column=1)
-	saga = Label(libro,text=datos[8]).grid(row=7, column=1)
-	paginas = Label(libro,text=datos[9]).grid(row=8, column=1)
-	capitulos = Label(libro,text=datos[10]).grid(row=9, column=1)
+	Label(libro,text=acomodarSaltosLinea(datos[1],50)).grid(row=0, column=1)
+	Label(libro,text=datos[2]).grid(row=1, column=1)
+	Label(libro,text=datos[3]).grid(row=2, column=1)
+	Label(libro,text=datos[4]).grid(row=3, column=1)
+	Label(libro,text=datos[5]).grid(row=4, column=1)
+	Label(libro,text=datos[6]).grid(row=5, column=1)
+	Label(libro,text=datos[7]).grid(row=6, column=1)
+	Label(libro,text=datos[8]).grid(row=7, column=1)
+	Label(libro,text=datos[9]).grid(row=8, column=1)
+	Label(libro,text=datos[10]).grid(row=9, column=1)
 	sinopsis = ScrolledText(libro, width=40,height=8)
 	sinopsis.insert("1.0", acomodarSaltosLinea(datos[11],35))
 	sinopsis.config(state=DISABLED)
