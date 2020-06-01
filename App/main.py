@@ -8,12 +8,39 @@ from libros import *
 from usuarios import *
 import textwrap
 from tkinter.scrolledtext import *
-window = register = login = None
+window = register = login = libro = admin =None
 notebook = None
 tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
 id_user = None
 usuarioColecValue = usuarioDeseadValue = usuarioLeidosValue = infousuario = None
 conn = Connection()
+def destryAll():
+	global window, register, login, libro, admin
+	if not(register is None):
+		try:
+			register.destroy()
+		except:
+			pass
+	if not(login is None):
+		try:
+			login.destroy()
+		except:
+			pass
+	if not(libro is None):
+		try:
+			libro.destroy()
+		except:
+			pass
+	if not(admin is None):
+		try:
+			admin.destroy()
+		except:
+			pass
+	if not(window is None):
+		try:
+			window.destroy()
+		except:
+			pass
 def iniciarApp(id_u):
 	global window, register, login, id_user
 	id_user = id_u
@@ -29,6 +56,7 @@ def iniciarApp(id_u):
 	window.title('My Book Collection')
 	informacionUsuario(id_u)
 	menuprincipal(id_u)
+	window.protocol("WM_DELETE_WINDOW", destryAll)
 	window.mainloop()
 def tab_switch(event):
 	global tabla_galeria, conn
@@ -82,16 +110,51 @@ def menuprincipal(id_u):
 	notebook.pack(expand=1, fill='both')	
 	notebook.bind('<ButtonRelease-1>',tab_switch)
 
+def showAdminLista(lista, id_libro):
+	global admin
+	if not(admin is None):
+		try:
+			admin.destroy()
+		except:
+			pass
+		admin = None	
+	admin = Tk()
+	centrar(admin,300,200) 
+	admin.resizable(False, False)
+	admin.title(lista)
+
 def showLibro(id_libro):
-	global window, conn, id_user
+	global window, conn, id_user, libro
+	if not(libro is None):
+		try:
+			libro.destroy()
+		except:
+			pass
+		libro = None
 	libro = Tk()
 	centrar(libro,550,400) 
 	libro.resizable(False, False)
 	libro.title("Libro")
 	botones = Frame(libro)
-	btnObtenido = Button(botones,text="Agregar Coleccion").grid(row=0)
-	btnDeseado = Button(botones,text="Agregar Deseados").grid(row=1)
-	btnLeido = Button(botones,text="Agregar Leidos").grid(row=2)
+	def adminLista(event):
+		btn = event.widget
+		lis = ""
+		if "Coleccion" in btn['text']:
+			lis = "Coleccion"
+		if "Deseados" in btn['text']:
+			lis = "Deseados"
+		if "Leidos" in btn['text']:
+			lis = "Leidos"
+		showAdminLista(lis,id_libro)
+	btnObtenido = Button(botones,text="Agregar Coleccion")
+	btnDeseado = Button(botones,text="Agregar Deseados")
+	btnLeido = Button(botones,text="Agregar Leidos")
+	btnObtenido.bind('<ButtonRelease-1>',adminLista)
+	btnDeseado.bind('<ButtonRelease-1>',adminLista)
+	btnLeido.bind('<ButtonRelease-1>',adminLista)
+	btnObtenido.grid(row=0)
+	btnDeseado.grid(row=1)
+	btnLeido.grid(row=2)
 	tituloEtiqueta = Label(libro,text="Titulo: ").grid(row=0, column=0)
 	autorEtiqueta = Label(libro,text="Autor: ").grid(row=1, column=0)
 	edicionEtiqueta = Label(libro,text="Edicion: ").grid(row=2, column=0)
