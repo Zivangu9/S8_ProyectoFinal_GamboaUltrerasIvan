@@ -15,6 +15,12 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from matplotlib.ticker import MaxNLocator
 import matplotlib.pylab as pl
+import webbrowser as wb
+from reportlab.lib.pagesizes import *
+from reportlab.lib.fonts import *
+from reportlab.pdfgen import canvas
+import itertools
+import os
 font =("Bookman Old Style", 12)
 window = register = login = libro = admin = opcionesGraf = grafica = reporte = None
 notebook = None
@@ -178,17 +184,47 @@ def menuprincipal(id_u):
 def showCrearReporte():
 	global reporte
 	reporte = Tk()
-	centrar(reporte,400,50)
+	centrar(reporte,350,50)
 	reporte.resizable(False,False)
 	reporte.title("Crear Reporte")
 	Label(reporte,text="Nombre del reporte:",anchor=E,width=20).grid(row=0,column=0)
-	nombre = StringVar()
-	Entry(reporte,text="Crear",textvariable=nombre,width=15).grid(row=0,column=1)
-	def btnReporteClick():
-		crearReporte(nombre)
-	Button(reporte,text="Generar",command=btnReporteClick).grid(row=0,column=2,padx=(10,10),pady=(10,10))
+	nombre = Entry(reporte,text="Crear",width=15)
+	nombre.grid(row=0,column=1)
+	Button(reporte,text="Generar",command=lambda: crearReporte(nombre.get()+".pdf")).grid(row=0,column=2,padx=(10,10),pady=(10,10))
 def crearReporte(nombre):
-	pass
+	def grouper(iterable, n):
+	    args = [iter(iterable)] * n
+	    return itertools.zip_longest(*args)
+	global conn, id_user, reporte
+	if not(reporte is None):
+		try:
+			reporte.destroy()
+		except:
+			pass
+	datos = consultarLibrosObtenidos(conn,id_user)
+	data = [('Fecha','Titulo','Autor','Edicion','Publicacion','Idioma','Editorial','Año','Saga','Paginas','Capitulos')]
+	for row in datos:
+		data.append((str(isNone(row[1])),str(isNone(row[2])),str(isNone(row[3])),str(isNone(row[4])),str(isNone(row[5])),str(isNone(row[6])),str(isNone(row[7])),str(isNone(row[8])),str(isNone(row[9])),str(isNone(row[10])),str(isNone(row[11]))))
+	c = canvas.Canvas("reportes/"+nombre, pagesize=landscape(A2))
+	w, h = landscape(A2)
+	max_rows_per_page = 64
+	# Margin.
+	x_offset = 50
+	y_offset = 150
+	# Space between rows.
+	padding = 15
+	xlist = [x + x_offset for x in [0,80,550,790,840,990,1070,1220,1260,1440,1490,1570]]
+	ylist = [h - y_offset - i*padding for i in range(max_rows_per_page + 1)]
+	for rows in grouper(data, max_rows_per_page):
+	    rows = tuple(filter(bool, rows))
+	    c.grid(xlist, ylist[:len(rows) + 1])
+	    for y, row in zip(ylist[:-1], rows):
+	        for x, cell in zip(xlist, row):
+	            c.drawString(x + 2, y - padding + 3, str(cell))
+	    c.showPage()
+
+	c.save()
+	wb.open_new(os.path.dirname(os.path.abspath(__file__))+"/reportes/"+nombre)
 def showOpcionesGrafica():
 	global opcionesGraf
 	if not(opcionesGraf is None):
