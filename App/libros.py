@@ -11,15 +11,15 @@ def consultarLibro(conn, id = -1):
 		return conn.cursor.fetchall()
 	return None
 def consultarLibrosObtenidos(conn,id_usuario):
-	sql_select_query = """SELECT libro.id_libro,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_obtenido, libro WHERE libro_obtenido.id_libro = libro.id_libro and id_usuario = %s"""
+	sql_select_query = """SELECT libro.id_libro,fecha,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_obtenido, libro WHERE libro_obtenido.id_libro = libro.id_libro and id_usuario = %s"""
 	conn.cursor.execute(sql_select_query,id_usuario)
 	return conn.cursor.fetchall()
 def consultarLibrosDeseados(conn, id_usuario):
-	sql_select_query = """SELECT libro.id_libro,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_deseado, libro WHERE libro_deseado.id_libro = libro.id_libro and id_usuario = %s"""
+	sql_select_query = """SELECT libro.id_libro,fecha,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_deseado, libro WHERE libro_deseado.id_libro = libro.id_libro and id_usuario = %s"""
 	conn.cursor.execute(sql_select_query,id_usuario)
 	return conn.cursor.fetchall()	
 def consultarLibrosLeidos(conn, id_usuario):
-	sql_select_query = """SELECT libro.id_libro,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_leido, libro WHERE libro_leido.id_libro = libro.id_libro and id_usuario = %s"""
+	sql_select_query = """SELECT libro.id_libro,fecha,titulo,autor,edicion,publicacion,idioma,editorial,año,saga,paginas,capitulos,sinopsis FROM libro_leido, libro WHERE libro_leido.id_libro = libro.id_libro and id_usuario = %s"""
 	conn.cursor.execute(sql_select_query,id_usuario)
 	return conn.cursor.fetchall()
 def cantidadLibrosObtenidos(conn, id_usuario):

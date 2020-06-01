@@ -22,5 +22,5 @@ def consultarNombre(conn, id_usuario):
 	conn.cursor.execute(sql_select_query,(id_usuario))
 	rows = conn.cursor.fetchall()		
 	if (len(rows)==1):
-		return rows[0][0]+rows[0][1]+rows[0][2]
+		return rows[0][0]+" "+rows[0][1]+" "+rows[0][2]
 	return ""

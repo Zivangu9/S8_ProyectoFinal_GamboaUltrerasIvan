@@ -11,17 +11,7 @@ INSERT INTO libro VALUES(null,"Harry Potter y el cáliz de fuego","J. K. Rowling
 INSERT INTO libro VALUES(null,"Harry Potter y la Orden del Fénix","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2004,"Harry Potter",893,null,null);
 INSERT INTO libro VALUES(null,"Harry Potter y el misterio del príncipe","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2006,"Harry Potter",602,null,null);
 INSERT INTO libro VALUES(null,"Harry Potter y las reliquias de la Muerte","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2008,"Harry Potter",638,null,null);
-INSERT INTO libro VALUES(null,"Harry Potter y las reliquias de la Muerte","J. K. Rowling",null,"Barcelona, España","Español","Salamandra",2008,"Harry Potter",638,null,"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+
 INSERT INTO libro_leido VALUES(null,1,1,now());
 INSERT INTO libro_obtenido VALUES(null,1,1,now());
 INSERT INTO libro_obtenido VALUES(null,1,3,now());
