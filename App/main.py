@@ -3,7 +3,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from connection import *
 from validacion import *
-from tabFrames import *
+from tablas import *
 from libros import *
 from usuarios import *
 import textwrap

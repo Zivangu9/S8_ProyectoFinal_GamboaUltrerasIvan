@@ -167,7 +167,6 @@ def eliminarLibroLeido(conn,id_usuario,id_libro):
 		messagebox.showerror("Error Leidos", "Error al eliminar ese libro a los leidos")
 		do.rollback()
 		return False
-
 def consultarFechaColeccion(conn,id_usuario,id_libro):
 	sql_select_query = """SELECT fecha FROM libro_obtenido WHERE id_usuario = %s and id_libro = %s"""
 	conn.cursor.execute(sql_select_query,(id_usuario, id_libro))

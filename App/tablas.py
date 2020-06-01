@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.font import *
 def crearTabla(tab,rows,nombre):
-	titulo = Label(tab, text=nombre, font=("Helvetica", 16))
+	titulo = Label(tab, text=nombre, font=("Bookman Old Style", 18))
 	headers = ['Titulo','Autor','Edicion','Publicacion','Idioma','Editorial','Año','Saga','Paginas','Capitulos']
 	tree = ttk.Treeview(tab, columns=headers, show="headings")
 	titulo.pack(side=TOP, fill="x")
@@ -11,13 +11,24 @@ def crearTabla(tab,rows,nombre):
 	hsb = ttk.Scrollbar(tab, orient="horizontal", command=tree.xview)
 	hsb.pack(side='bottom', fill='x')
 	tree.configure(xscrollcommand=hsb.set, yscrollcommand=vsb.set)
+	tree.column(headers[0], width=300)
+	tree.column(headers[1], width=100)
+	tree.column(headers[2], width=50)
+	tree.column(headers[3], width=150)
+	tree.column(headers[4], width=80)
+	tree.column(headers[5], width=150)
+	tree.column(headers[6], width=40)
+	tree.column(headers[7], width=120)
+	tree.column(headers[8], width=50)
+	tree.column(headers[9], width=80)
 	for header in headers:
 		tree.heading(header, text=header.title())
+
 	actualizarTabla(tree,rows)
 	tree.pack(expand=1, fill='both')
 	return tree
 def crearTablaLista(tab,rows,nombre):
-	titulo = Label(tab, text=nombre, font=("Helvetica", 16))
+	titulo = Label(tab, text=nombre, font=("Bookman Old Style", 18))
 	headers = ['Fecha','Titulo','Autor','Edicion','Publicacion','Idioma','Editorial','Año','Saga','Paginas','Capitulos']
 	tree = ttk.Treeview(tab, columns=headers, show="headings")
 	titulo.pack(side=TOP, fill="x")
@@ -26,6 +37,17 @@ def crearTablaLista(tab,rows,nombre):
 	hsb = ttk.Scrollbar(tab, orient="horizontal", command=tree.xview)
 	hsb.pack(side='bottom', fill='x')
 	tree.configure(xscrollcommand=hsb.set, yscrollcommand=vsb.set)
+	tree.column(headers[0], width=80)
+	tree.column(headers[1], width=300)
+	tree.column(headers[2], width=100)
+	tree.column(headers[3], width=50)
+	tree.column(headers[4], width=150)
+	tree.column(headers[5], width=80)
+	tree.column(headers[6], width=150)
+	tree.column(headers[7], width=40)
+	tree.column(headers[8], width=120)
+	tree.column(headers[9], width=50)
+	tree.column(headers[10], width=80)
 	for header in headers:
 		tree.heading(header, text=header.title())
 	actualizarTablaLista(tree,rows)
