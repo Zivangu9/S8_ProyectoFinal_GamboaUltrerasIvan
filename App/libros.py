@@ -28,11 +28,28 @@ def cantidadLibrosDeseados(conn, id_usuario):
 	return len(consultarLibrosDeseados(conn,id_usuario))
 def cantidadLibrosLeidos(conn, id_usuario):
 	return len(consultarLibrosLeidos(conn,id_usuario))
-
+def isLibroColeccion(conn,id_usuario,id_libro):
+	sql_select_query = """SELECT * FROM libro_obtenido WHERE id_usuario = %s and id_libro = %s"""
+	conn.cursor.execute(sql_select_query,(id_usuario, id_libro))
+	if len(conn.cursor.fetchall())==1:
+		return True
+	return False
+def isLibroDeseado(conn,id_usuario,id_libro):
+	sql_select_query = """SELECT * FROM libro_deseado WHERE id_usuario = %s and id_libro = %s"""
+	conn.cursor.execute(sql_select_query,(id_usuario, id_libro))
+	if len(conn.cursor.fetchall())==1:
+		return True
+	return False
+def isLibroLeido(conn,id_usuario,id_libro):
+	sql_select_query = """SELECT * FROM libro_leido WHERE id_usuario = %s and id_libro = %s"""
+	conn.cursor.execute(sql_select_query,(id_usuario, id_libro))
+	if len(conn.cursor.fetchall())==1:
+		return True
+	return False
 def agregarLibroColeccion(conn,id_usuario,id_libro,fecha):
 	sql_insert_query = """INSERT INTO libro_obtenido VALUES(Null,%s,%s,%s)"""
-	sql_select_query = """SELECT * FROM libro_obtenido WHERE id_libro = %s and id_usuario = %s"""
-	conn.cursor.execute(sql_select_query,(id_libro, id_usuario))
+	sql_select_query = """SELECT * FROM libro_obtenido WHERE id_usuario = %s and id_libro = %s"""
+	conn.cursor.execute(sql_select_query,(id_usuario,id_libro))
 	if len(conn.cursor.fetchall())<1:
 		try:
 			conn.cursor.execute(sql_insert_query,(id_usuario,id_libro,fecha))
@@ -46,12 +63,10 @@ def agregarLibroColeccion(conn,id_usuario,id_libro,fecha):
 		messagebox.showerror("Error Coleccion", "Error ese libro ya esta en tu coleccion")
 
 def eliminarLibroDeseado(conn,id_usuario,id_libro):
-	print("Borrando")
 	sql_delete_query = """DELETE FROM libro_deseado WHERE id_usuario = %s and id_libro = %s """
 	try:
 		conn.cursor.execute(sql_delete_query,(id_usuario,id_libro))
 		conn.db.commit()
-		print("Borrado")
 		return True
 	except:
 		messagebox.showerror("Error Deseados", "Error al eliminar ese libro a los deseados")
