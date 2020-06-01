@@ -10,6 +10,7 @@ import textwrap
 from tkinter.scrolledtext import *
 from tkcalendar import *
 from datetime import *
+font =("Bookman Old Style", 12)
 window = register = login = libro = admin =None
 notebook = None
 tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
@@ -58,7 +59,7 @@ def cerrarAdmin():
 			pass
 		libro = None
 def iniciarApp(id_u):
-	global window, register, login, id_user
+	global window, register, login, id_user, font
 	id_user = id_u
 	if not(register is None):
 		register.destroy()
@@ -67,12 +68,15 @@ def iniciarApp(id_u):
 		login.destroy()
 		login = None
 	window = Tk()
+	window.option_add("*Font",font)
 	centrar(window,1000,700) 
 	window.resizable(False, False)
 	window.title('My Book Collection')
 	informacionUsuario(id_u)
 	menuprincipal(id_u)
 	window.protocol("WM_DELETE_WINDOW", destroyAll)
+
+	text = Text(window,font = ("Bookman Old Style",12))
 	window.mainloop()
 def tab_switch(event):
 	global tabla_galeria, conn
@@ -132,7 +136,7 @@ def menuprincipal(id_u):
 	notebook.pack(expand=1, fill='both')	
 	notebook.bind('<ButtonRelease-1>',tab_switch)
 def showAdminLista(lista,accion,id_lib):
-	global admin, conn, id_user
+	global admin, conn, id_user, font
 	global btnObtenido,btnDeseado,btnLeido
 	if not(admin is None):
 		try:
@@ -141,6 +145,7 @@ def showAdminLista(lista,accion,id_lib):
 			pass
 		admin = None	
 	admin = Tk()
+	admin.option_add("*Font",font)
 	centrar(admin,300,200) 
 	admin.resizable(False, False)
 	admin.title(accion+" "+lista)
@@ -209,7 +214,7 @@ def showAdminLista(lista,accion,id_lib):
 		btnEliminar.bind('<ButtonRelease-1>',eliminarLibro)
 		btnEliminar.grid(row = 0,column=2)
 def showLibro(id_lib):
-	global window, conn, id_user, libro, admin, id_libro
+	global window, conn, id_user, libro, admin, id_libro, font
 	global btnObtenido,btnDeseado,btnLeido
 	id_libro = id_lib
 	if not(admin is None):
@@ -224,6 +229,7 @@ def showLibro(id_lib):
 			pass
 		libro = None
 	libro = Tk()
+	libro.option_add("*Font",font)
 	libro.protocol("WM_DELETE_WINDOW", cerrarAdmin)
 	centrar(libro,550,400) 
 	libro.resizable(False, False)
@@ -300,7 +306,7 @@ def showLibro(id_lib):
 	sinopsis.grid(row=10, column=1)
 	botones.grid(row=0,column=2,rowspan=11)
 def showLogin():	
-	global window, login, register, conn, id_user
+	global window, login, register, conn, id_user, font
 	if not(register is None):
 		register.destroy()
 		register = None
@@ -308,15 +314,20 @@ def showLogin():
 		window.destroy()
 		window = None
 	login = Tk()
-	centrar(login,200,80) 
+	login.option_add("*Font",font)
+	centrar(login,510,199) 
 	login.resizable(False, False)
-	login.title("Login")	
-	usernameLabel = Label(login, text="Usuario").grid(row=0, column=0)
+	login.title("Inicio de Sesión")
+	img = PhotoImage(file="img/librero.gif")
+	img = img.subsample(2, 2)
+	Label(login,image=img,bd=0).grid(row=0,column=0,rowspan=3)
+	Label(login,image=img,bd=0).grid(row=0,column=3,rowspan=3)
+	Label(login, text="Usuario:",anchor="e",width=12).grid(row=0, column=1)
 	username = StringVar()
-	usernameEntry = Entry(login, textvariable=username).grid(row=0, column=1)  
-	passwordLabel = Label(login,text="Contraseña").grid(row=1, column=0)  
+	Entry(login, textvariable=username).grid(row=0, column=2,padx=(10,40))  
+	Label(login,text="Contraseña:",anchor="e",width=12).grid(row=1, column=1)  
 	password = StringVar()
-	passwordEntry = Entry(login, textvariable=password, show='*').grid(row=1, column=1)
+	Entry(login, textvariable=password, show='*').grid(row=1, column=2,padx=(10,40))
 	def btnIniciarSesion():
 		if validarDatosInicioSesion(username.get(),password.get()):
 			id_u = iniciarSesion(conn,username.get(),password.get())
@@ -324,44 +335,53 @@ def showLogin():
 				iniciarApp(id_u)
 			else:
 				messagebox.showerror("Error", "Usuario o Contraseña Incorrectos")
-	registerButton = Button(login, text="Register", command=showRegister).grid(row=2, column=0,sticky=W+E) 
-	loginButton = Button(login, text="Login", command=btnIniciarSesion).grid(row=2, column=1,sticky=W+E) 
+	botones = Frame(login)
+	botones.grid(row=2,column=1,columnspan=2,pady=(10,10))
+	Button(botones, text="Registrar", command=showRegister,width=10).grid(row=0, column=0,padx=(10,10)) 
+	Button(botones, text="Iniciar", command=btnIniciarSesion,width=10).grid(row=0, column=1,padx=(10,10)) 
 	login.mainloop()
 
 def showRegister():
-	global login, register, conn, id_user
+	global login, register, conn, id_user, font
 	if not(login is None):
 		login.destroy()
 		login = None
 	register = Tk()
-	centrar(register,260,170)
+	register.option_add("*Font",font)
+	centrar(register,715,390)
 	register.resizable(False, False)
 	register.title("Registro")
-	nombreEtiqueta = Label(register, text="Nombre").grid(row=0, column=0)
+	img = PhotoImage(file="img/librero.gif")
+	Label(login,image=img,bd=0).grid(row=0,column=0,rowspan=7)
+	Label(login,image=img,bd=0).grid(row=0,column=3,rowspan=7)
+	
+	Label(register, text="Nombre:",anchor="e",width=19).grid(row=0, column=1)
 	nombre = StringVar()
-	nombreEntry = Entry(register, textvariable=nombre).grid(row=0, column=1)  
-	primerApeEtiqueta = Label(register,text="Primer Apellido").grid(row=1, column=0)  
+	Entry(register, textvariable=nombre).grid(row=0, column=2,padx=(10,40))
+	Label(register,text="Primer Apellido:",anchor="e",width=19).grid(row=1, column=1)  
 	primerApe = StringVar()
-	primerApeEntry = Entry(register, textvariable=primerApe).grid(row=1, column=1)
-	segundoApeEtiqueta = Label(register,text="Segundo Apellido").grid(row=2, column=0)  
+	Entry(register, textvariable=primerApe).grid(row=1, column=2,padx=(10,40))
+	Label(register,text="Segundo Apellido:",anchor="e",width=19).grid(row=2, column=1)  
 	segundoApe = StringVar()
-	segundoApeEntry = Entry(register, textvariable=segundoApe).grid(row=2, column=1)
-	usernameLabel = Label(register, text="Usuario").grid(row=3, column=0)
+	Entry(register, textvariable=segundoApe).grid(row=2, column=2,padx=(10,40))
+	Label(register, text="Usuario:",anchor="e",width=19).grid(row=3, column=1)
 	username = StringVar()	
-	usernameEntry = Entry(register, textvariable=username).grid(row=3, column=1)  
-	passwordLabel = Label(register,text="Contraseña").grid(row=4, column=0)  
+	Entry(register, textvariable=username).grid(row=3, column=2,padx=(10,40))
+	Label(register,text="Contraseña:",anchor="e",width=19).grid(row=4, column=1)  
 	password = StringVar()
-	passwordEntry = Entry(register, textvariable=password, show='*').grid(row=4, column=1)
-	repasswordLabel = Label(register,text="Confirma Contraseña").grid(row=5, column=0)  
+	Entry(register, textvariable=password, show='*').grid(row=4, column=2,padx=(10,40))
+	Label(register,text="Confirma Contraseña:",anchor="e",width=19).grid(row=5, column=1)  
 	repassword = StringVar()
-	repasswordEntry = Entry(register, textvariable=repassword, show='*').grid(row=5, column=1)
+	Entry(register, textvariable=repassword, show='*').grid(row=5, column=2,padx=(10,40))
 	def btnRegistrarUsuario():
 		if validarDatosRegistro(nombre.get(),primerApe.get(),segundoApe.get(),username.get(),password.get(),repassword.get()):
 			if registrarUsuario(conn, nombre.get(),primerApe.get(),segundoApe.get(),username.get(),password.get()):
 				id_u = iniciarSesion(conn, username.get(),password.get())
 				iniciarApp(id_u)
-	cancelButton = Button(register, text="Cancelar", command=showLogin).grid(row=6, column=0,sticky=W+E) 
-	registrarButton = Button(register, text="Register", command=btnRegistrarUsuario).grid(row=6, column=1,sticky=W+E) 
+	botones = Frame(register)
+	botones.grid(row=6,column=1,columnspan=2,pady=(10,10))
+	Button(botones, text="Cancelar", command=showLogin).grid(row=6, column=0,padx=(10,10)) 
+	Button(botones, text="Register", command=btnRegistrarUsuario).grid(row=6, column=1,padx=(10,10)) 
 	register.mainloop()
 def centrar(window,width, height):
 	window.geometry("{}x{}+{}+{}".format(width,height,int(window.winfo_screenwidth()/2 - width/2),int(window.winfo_screenheight()/2 - height/2)))
