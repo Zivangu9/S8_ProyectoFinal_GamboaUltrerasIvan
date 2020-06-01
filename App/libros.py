@@ -188,3 +188,31 @@ def consultarFechaLeido(conn,id_usuario,id_libro):
 	if len(rows)==1:
 		return rows[0][0]
 	return None
+def consultarLibrosColeccionPorMes(conn,id_usuario):
+	format1 = '%b %Y'
+	format2 = '%Y-%m'
+	format3 = '%Y-%m-%d'
+	sql_select_query = """SELECT DATE_FORMAT(fecha,%s) as month,COUNT(fecha) as total_records FROM libro_obtenido WHERE id_usuario = %s GROUP BY DATE_FORMAT(fecha,%s),id_usuario ORDER BY DATE_FORMAT(fecha,%s)"""
+	conn.cursor.execute(sql_select_query,(format1, id_usuario,format2, format3))
+	return conn.cursor.fetchall()
+def consultarLibrosColeccionPorA(conn,id_usuario):
+	format1 = '%Y'
+	format2 = '%Y'
+	format3 = '%Y-%m-%d'
+	sql_select_query = """SELECT DATE_FORMAT(fecha,%s) as year,COUNT(fecha) as total_records FROM libro_obtenido WHERE id_usuario = %s GROUP BY DATE_FORMAT(fecha,%s),id_usuario ORDER BY DATE_FORMAT(fecha,%s)"""
+	conn.cursor.execute(sql_select_query,(format1, id_usuario,format2, format3))
+	return conn.cursor.fetchall()
+def consultarLibrosLeidosPorMes(conn,id_usuario):
+	format1 = '%b %Y'
+	format2 = '%Y-%m'
+	format3 = '%Y-%m-%d'
+	sql_select_query = """SELECT DATE_FORMAT(fecha,%s) as month,COUNT(fecha) as total_records FROM libro_leido WHERE id_usuario = %s GROUP BY DATE_FORMAT(fecha,%s),id_usuario ORDER BY DATE_FORMAT(fecha,%s)"""
+	conn.cursor.execute(sql_select_query,(format1, id_usuario,format2, format3))
+	return conn.cursor.fetchall()
+def consultarLibrosLeidosPorA(conn,id_usuario):
+	format1 = '%Y'
+	format2 = '%Y'
+	format3 = '%Y-%m-%d'
+	sql_select_query = """SELECT DATE_FORMAT(fecha,%s) as year,COUNT(fecha) as total_records FROM libro_leido WHERE id_usuario = %s GROUP BY DATE_FORMAT(fecha,%s),id_usuario ORDER BY DATE_FORMAT(fecha,%s)"""
+	conn.cursor.execute(sql_select_query,(format1, id_usuario,format2, format3))
+	return conn.cursor.fetchall()

@@ -27,3 +27,5 @@ INSERT INTO libro_obtenido VALUES(null,1,4,now());
 INSERT INTO libro_deseado VALUES(null,1,2,now());
 INSERT INTO libro_deseado VALUES(null,1,5,now());
 
+SELECT DATE_FORMAT(fecha,'%b %Y') as month,COUNT(fecha) as total_records FROM libro_obtenido WHERE id_usuario = 1 GROUP BY DATE_FORMAT(fecha,'%Y-%m'),id_usuario ORDER BY DATE_FORMAT(fecha,'%Y-%m-%d');
+SELECT DATE_FORMAT(fecha,'%Y') as month,COUNT(fecha) as total_records FROM libro_obtenido WHERE id_usuario = 1 GROUP BY DATE_FORMAT(fecha,'%Y'),id_usuario ORDER BY DATE_FORMAT(fecha,'%Y-%m-%d');

@@ -10,8 +10,13 @@ import textwrap
 from tkinter.scrolledtext import *
 from tkcalendar import *
 from datetime import *
+import matplotlib,numpy
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+from matplotlib.ticker import MaxNLocator
+import matplotlib.pylab as pl
 font =("Bookman Old Style", 12)
-window = register = login = libro = admin =None
+window = register = login = libro = admin = opcionesGraf = grafica = reporte = None
 notebook = None
 tabla_galeria = tabla_coleccion = tabla_deseados = tabla_leidos = None
 id_user = id_libro = None
@@ -20,7 +25,7 @@ btnObtenido = btnDeseado = btnLeido = None
 btnGrafica = btnReporte = None
 conn = Connection()
 def destroyAll():
-	global window, register, login, libro, admin
+	global window, register, login, libro, admin, opcionesGraf, reporte
 	if not(register is None):
 		try:
 			register.destroy()
@@ -39,6 +44,21 @@ def destroyAll():
 	if not(admin is None):
 		try:
 			admin.destroy()
+		except:
+			pass
+	if not(opcionesGraf is None):
+		try:
+			opcionesGraf.destroy()
+		except:
+			pass
+	if not(grafica is None):
+		try:
+			grafica.destroy()
+		except:
+			pass
+	if not(reporte is None):
+		try:
+			reporte.destroy()
 		except:
 			pass
 	if not(window is None):
@@ -70,7 +90,7 @@ def iniciarApp(id_u):
 		login = None
 	window = Tk()
 	window.option_add("*Font",font)
-	centrar(window,1000,700) 
+	centrar(window,990,510) 
 	window.resizable(False, False)
 	window.title('My Book Collection')
 	informacionUsuario(id_u)
@@ -102,11 +122,11 @@ def informacionUsuario(id_u):
 	infousuario = Frame(window)
 	infousuario.grid(row=0,column=0)
 	nombreFrame = Frame(infousuario)
-	nombreFrame.grid(row=0,columnspan=6)
+	nombreFrame.grid(row=0,column=0,columnspan=6)
 	usuarioLabel = Label(nombreFrame,text="Usuario:",anchor="e",width=12).grid(row=0, column=0)  
 	usuarioColecLabel = Label(infousuario,text="Libros Obtenidos:",anchor="e",width=15).grid(row=1, column=0)  
 	usuarioDeseadLabel = Label(infousuario,text="Libros Deseados:",anchor="e",width=17).grid(row=1, column=2)  
-	usuarioLeidosLabel = Label(infousuario,text="Libros Leidos:",anchor="e",width=15).grid(row=1, column=4)  
+	usuarioLeidosLabel = Label(infousuario,text="Libros Leídos:",anchor="e",width=15).grid(row=1, column=4)  
 	usuarioValue = Label(nombreFrame,text=consultarNombre(conn,id_u),anchor="w",width=30).grid(row=0, column=1)
 	actualizarCantidades()
 def treeViewListener(event):
@@ -120,24 +140,20 @@ def actualizarCantidades():
 def menuprincipal(id_u):
 	global notebook, conn, tabla_galeria, tabla_coleccion, tabla_deseados, tabla_leidos, font, window
 	global btnGrafica, btnReporte
-	def crearGrafica():
-		print("Graficando")
-	def crearReporte():
-		print("Reportando")
 	botonesGenerar = Frame(window,width=193, height = 106)
 	botonesGenerar.grid(row=0,column=1)
 	iconGrafica = PhotoImage(file="img/grafica.png")
 	iconGrafica = iconGrafica.subsample(10, 10)
-	btnGrafica = Button(botonesGenerar,text = "Graficar",image=iconGrafica,compound=TOP,command=crearGrafica)
+	btnGrafica = Button(botonesGenerar,text = "Graficar",image=iconGrafica,compound=TOP,command=showOpcionesGrafica)
 	btnGrafica.grid(row=0,column=0,padx=(10,10),pady=(10,10))
 	iconReporte = PhotoImage(file="img/reporte.png")
 	iconReporte = iconReporte.subsample(10, 10)
-	btnReporte = Button(botonesGenerar,text = "Reporte",image=iconReporte,compound=TOP,command=crearReporte)
+	btnReporte = Button(botonesGenerar,text = "Reporte",image=iconReporte,compound=TOP,command=showCrearReporte)
 	btnReporte.grid(row=0,column=1,padx=(10,10),pady=(10,10))
 	style = ttk.Style(window)
 	style.configure('lefttab.TNotebook', tabposition='ws')
 	style.configure('lefttab.TNotebook.Tab', margin = 10, padding = [10,20])
-	notebook = ttk.Notebook(window, style='lefttab.TNotebook',width=900,height=500)
+	notebook = ttk.Notebook(window, style='lefttab.TNotebook',width=900,height=400)
 	tab_galeria = ttk.Frame(notebook)
 	tab_coleccion = ttk.Frame(notebook)
 	tab_deseados = ttk.Frame(notebook)
@@ -152,13 +168,92 @@ def menuprincipal(id_u):
 	tabla_deseados.bind('<<TreeviewSelect>>',treeViewListener)
 	tabla_leidos.bind('<<TreeviewSelect>>',treeViewListener)
 	notebook.add(tab_galeria, text='Galería')
-	notebook.add(tab_coleccion, text='Coleccion')
+	notebook.add(tab_coleccion, text='Colección')
 	notebook.add(tab_deseados, text='Deseados')
 	notebook.add(tab_leidos, text='Leídos')
 	notebook.add(tab_salir, text='Salir')
 	notebook.grid(row=1,column=0,columnspan=2)	
 	notebook.bind('<<NotebookTabChanged>>',tab_switch)
 	Button(botonesGenerar).pack()#Error que hace funcionar los botones
+def showCrearReporte():
+	global reporte
+	reporte = Tk()
+	centrar(reporte,400,50)
+	reporte.resizable(False,False)
+	reporte.title("Crear Reporte")
+	Label(reporte,text="Nombre del reporte:",anchor=E,width=20).grid(row=0,column=0)
+	nombre = StringVar()
+	Entry(reporte,text="Crear",textvariable=nombre,width=15).grid(row=0,column=1)
+	def btnReporteClick():
+		crearReporte(nombre)
+	Button(reporte,text="Generar",command=btnReporteClick).grid(row=0,column=2,padx=(10,10),pady=(10,10))
+def crearReporte(nombre):
+	pass
+def showOpcionesGrafica():
+	global opcionesGraf
+	if not(opcionesGraf is None):
+		try:
+			opcionesGraf.destroy()
+		except:
+			pass
+	opcionesGraf = Tk()
+	centrar(opcionesGraf,250,50)
+	opcionesGraf.resizable(False,False)
+	opcionesGraf.title("Graficar")
+	Label(opcionesGraf,text="Graficar por:",anchor=E,width=15).grid(row=0,column=0)
+	opcion = ttk.Combobox(opcionesGraf, values=["Año","Mes"],width=4,state="readonly")
+	opcion.grid(row=0,column=1)
+	opcion.current(0)
+	def iniciarGrafica():
+		showGrafica(opcion.get())
+	Button(opcionesGraf,text="Generar",command=iniciarGrafica).grid(row=0,column=2,padx=(10,10),pady=(10,10))
+def showGrafica(modo):
+	global notebook, grafica, opcionesGraf,conn,id_user
+	if not(opcionesGraf is None):
+		try:
+			opcionesGraf.destroy()
+		except:
+			opcionesGraf = None
+	if not(grafica is None):
+		try:
+			grafica.destroy()
+		except:
+			pass
+	grafica = Tk()
+	centrar(grafica,800,500)
+	grafica.resizable(False,False)
+	lista = notebook.tab(notebook.select(), "text")
+	title = "Gráfica"
+	rows = None
+	if modo == "Año":
+		title += " por años de "
+		if lista ==  "Colección":
+			rows = consultarLibrosColeccionPorA(conn,id_user)
+		if lista == "Leídos":
+			rows = consultarLibrosLeidosPorA(conn,id_user)
+	if modo == "Mes":
+		title += " por mese de "
+		if lista ==  "Colección":
+			rows = consultarLibrosColeccionPorMes(conn,id_user)
+		if lista == "Leídos":
+			rows = consultarLibrosLeidosPorMes(conn,id_user)
+	title += lista
+	grafica.title(title)
+	f = Figure(figsize=(6,4), dpi=100)
+	ax = f.add_subplot(111)
+	ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+	data = []
+	ind = []
+	for row in rows:
+		ind.append(row[0])
+		data.append(row[1])
+	ax.set_xticklabels(ind, rotation = 90, ha="right")
+	f.tight_layout()
+	ax.bar(ind, data)
+	canvas = FigureCanvasTkAgg(f, master=grafica)
+	#canvas.show()
+	canvas.get_tk_widget().pack(expand=1,fill=BOTH)
+	print()
 def showAdminLista(lista,accion,id_lib):
 	global admin, conn, id_user, font
 	global btnObtenido,btnDeseado,btnLeido
@@ -178,11 +273,11 @@ def showAdminLista(lista,accion,id_lib):
 	Label(admin,text=textwrap.fill(datos[1], width=30),anchor='w',width=30).grid(row=0, column=1)
 	Label(admin,text="Fecha:",anchor='e',width=8).grid(row=1, column=0)
 	f = None
-	if lista == "Coleccion":
+	if lista == "Colección":
 		f = consultarFechaColeccion(conn,id_user,id_lib)
 	if lista == "Deseados":
 		f = consultarFechaDeseado(conn,id_user,id_lib)
-	if lista == "Leidos":
+	if lista == "Leídos":
 		f = consultarFechaLeido(conn,id_user,id_lib)
 	cal = DateEntry(admin,width=11,bg="darkblue",fg="white",locale='es_MX')
 	if not(f is None):
@@ -190,37 +285,37 @@ def showAdminLista(lista,accion,id_lib):
 	cal.grid(row=1, column = 1,sticky='w')
 	def agregarLibro(event):
 		global conn, id_user
-		if lista == "Coleccion":
+		if lista == "Colección":
 			if agregarLibroColeccion(conn,id_user,id_lib,cal.get_date()):
-				btnObtenido["text"] = "Editar Coleccion"
+				btnObtenido["text"] = "Editar Colección"
 			if True:
 				eliminarLibroDeseado(conn,id_user,id_lib)
 				btnDeseado['text'] = "Agregar Deseados"
 		if lista == "Deseados":
 			if agregarLibroDeseado(conn,id_user,id_lib,cal.get_date()):
 				btnDeseado["text"] = "Editar Deseados"
-		if lista == "Leidos":
+		if lista == "Leídos":
 			if agregarLibroLeido(conn,id_user,id_lib,cal.get_date()):
-				btnLeido["text"] = "Editar Leidos"
+				btnLeido["text"] = "Editar Leídos"
 		actualizarInformacion()
 	def guardarLibro(event):
-		if lista == "Coleccion":
+		if lista == "Colección":
 			editarLibroColeccion(conn,id_user,id_lib,cal.get_date())
 		if lista == "Deseados":
 			editarLibroDeseado(conn,id_user,id_lib,cal.get_date())
-		if lista == "Leidos":
+		if lista == "Leídos":
 			editarLibroLeido(conn,id_user,id_lib,cal.get_date())
 		actualizarInformacion()
 	def eliminarLibro(event):
-		if lista == "Coleccion":
+		if lista == "Colección":
 			if eliminarLibroColeccion(conn,id_user,id_lib):
-				btnObtenido["text"] = "Agregar Coleccion"
+				btnObtenido["text"] = "Agregar Colección"
 		if lista == "Deseados":
 			if eliminarLibroDeseado(conn,id_user,id_lib):
 				btnDeseado["text"] = "Agregar Deseados"
-		if lista == "Leidos":
+		if lista == "Leídos":
 			if eliminarLibroLeido(conn,id_user,id_lib):
-				btnLeido["text"] = "Agregar Leidos"
+				btnLeido["text"] = "Agregar Leídos"
 		actualizarInformacion()
 	botones = Frame(admin)
 	botones.grid(row=3,column=0, columnspan=2,pady=(10,10))
@@ -268,12 +363,12 @@ def showLibro(id_lib):
 			accion = "Agregar"
 		if "Editar" in btn['text']:
 			accion = "Administrar"
-		if "Coleccion" in btn['text']:
-			lis = "Coleccion"
+		if "Colección" in btn['text']:
+			lis = "Colección"
 		if "Deseados" in btn['text']:
 			lis = "Deseados"
-		if "Leidos" in btn['text']:
-			lis = "Leidos"
+		if "Leídos" in btn['text']:
+			lis = "Leídos"
 		if accion == "Agregar" and lis == "Deseados":
 			if isLibroColeccion(conn,id_user,id_lib):
 				messagebox.showinfo("Info Existencia", "Ya tienes este libro en tu Colección")
@@ -281,17 +376,17 @@ def showLibro(id_lib):
 				return
 		showAdminLista(lis,accion,id_lib)
 	if isLibroColeccion(conn, id_user,id_lib):
-		btnObtenido = Button(botones,text="Editar Coleccion")
+		btnObtenido = Button(botones,text="Editar Colección")
 	else:
-		btnObtenido = Button(botones,text="Agregar Coleccion")
+		btnObtenido = Button(botones,text="Agregar Colección")
 	if isLibroDeseado(conn, id_user,id_lib):
 		btnDeseado = Button(botones,text="Editar Deseados")
 	else:
 		btnDeseado = Button(botones,text="Agregar Deseados")
 	if isLibroLeido(conn, id_user,id_lib):
-		btnLeido = Button(botones,text="Editar Leidos")
+		btnLeido = Button(botones,text="Editar Leídos")
 	else:
-		btnLeido = Button(botones,text="Agregar Leidos")
+		btnLeido = Button(botones,text="Agregar Leídos")
 	btnObtenido.bind('<ButtonRelease-1>',adminLista)
 	btnDeseado.bind('<ButtonRelease-1>',adminLista)
 	btnLeido.bind('<ButtonRelease-1>',adminLista)
@@ -331,12 +426,11 @@ def showLibro(id_lib):
 	botones.grid(row=0,column=2,rowspan=11)
 def showLogin():	
 	global window, login, register, conn, id_user, font
+
 	if not(register is None):
 		register.destroy()
 		register = None
-	if not(window is None):
-		window.destroy()
-		window = None
+	destroyAll()
 	login = Tk()
 	login.option_add("*Font",font)
 	centrar(login,510,199) 
