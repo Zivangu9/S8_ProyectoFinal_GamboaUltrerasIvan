@@ -79,8 +79,14 @@ def tab_switch(event):
 	if notebook.tab(notebook.select(), "text") == "Salir":
 		id_user = None
 		showLogin()
-	if notebook.tab(notebook.select(), "text") == "Galería":
-		actualizarTabla(tabla_galeria,consultarLibros(conn))
+	actualizarInformacion()
+def actualizarInformacion():
+	global tabla_galeria, tabla_coleccion, tabla_deseados, tabla_leidos, id_user
+	actualizarTabla(tabla_galeria,consultarLibros(conn))
+	actualizarTabla(tabla_coleccion,consultarLibrosObtenidos(conn,id_user))
+	actualizarTabla(tabla_deseados,consultarLibrosDeseados(conn,id_user))
+	actualizarTabla(tabla_leidos,consultarLibrosLeidos(conn,id_user))
+	actualizarCantidades()
 def informacionUsuario(id_u):
 	global usuarioColecValue, usuarioDeseadValue, usuarioLeidosValue, infousuario, id_user
 	infousuario = Frame(window)
@@ -100,7 +106,7 @@ def actualizarCantidades():
 	usuarioDeseadValue = Label(infousuario,text=cantidadLibrosDeseados(conn,id_user)).grid(row=1, column=3)
 	usuarioLeidosValue = Label(infousuario,text=cantidadLibrosLeidos(conn,id_user)).grid(row=1, column=5)
 def menuprincipal(id_u):
-	global notebook, conn, tabla_galeria
+	global notebook, conn, tabla_galeria, tabla_coleccion, tabla_deseados, tabla_leidos
 	style = ttk.Style(window)
 	style.configure('lefttab.TNotebook', tabposition='ws')
 	style.configure('lefttab.TNotebook.Tab', margin = 10, padding = [10,20])
@@ -157,6 +163,7 @@ def showAdminLista(lista,accion,id_lib):
 			btnDeseado["text"] = "Editar Deseados"
 		if lista == "Leidos":
 			btnLeido["text"] = "Editar Leidos"
+		actualizarInformacion()
 	botones = Frame(admin)
 	botones.grid(row=3,column=0, columnspan=2)
 	btnCancelar = Button(botones,text="Cancelar",command=admin.destroy)
