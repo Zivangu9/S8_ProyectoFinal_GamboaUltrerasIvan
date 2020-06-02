@@ -29,3 +29,12 @@ def validarDatosInicioSesion(usuario, password):
 	else:
 		messagebox.showerror("Usuario Invalido", "El Usuario debe contener solo letras")
 	return False
+def validarNombrePdf(nombre):
+	if len(nombre)>0:
+		if (all(x.isalnum() or x.isspace() or x=='-' or x=='_' for x in nombre)):
+			return True
+		else:
+			messagebox.showerror("Nombre Invalido", "El Nombre debe contener solo letras y numeros")
+	else:
+		messagebox.showerror("Nombre Invalido", "Ingresa un Nombre")
+	return False

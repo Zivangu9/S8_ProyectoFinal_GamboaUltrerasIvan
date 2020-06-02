@@ -19,8 +19,11 @@ import webbrowser as wb
 from reportlab.lib.pagesizes import *
 from reportlab.lib.fonts import *
 from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 import itertools
 import os
+from pathlib import Path
 font =("Bookman Old Style", 12)
 window = register = login = libro = admin = opcionesGraf = grafica = reporte = None
 notebook = None
@@ -190,12 +193,21 @@ def showCrearReporte():
 	Label(reporte,text="Nombre del reporte:",anchor=E,width=20).grid(row=0,column=0)
 	nombre = Entry(reporte,text="Crear",width=15)
 	nombre.grid(row=0,column=1)
-	Button(reporte,text="Generar",command=lambda: crearReporte(nombre.get()+".pdf")).grid(row=0,column=2,padx=(10,10),pady=(10,10))
+	Button(reporte,text="Generar",command=lambda: crearReporte(nombre.get())).grid(row=0,column=2,padx=(10,10),pady=(10,10))
 def crearReporte(nombre):
+	global conn, id_user, reporte
+	if not validarNombrePdf(nombre):
+		reporte.lift()
+		return
+	nombre+=".pdf"
+	f = Path(os.path.dirname(os.path.abspath(__file__))+"/reportes/"+nombre)
+	if f.is_file():
+		messagebox.showerror("Nombre Invalido", "Ya existe un archivo con ese nombre")
+		reporte.lift()
+		return
 	def grouper(iterable, n):
 	    args = [iter(iterable)] * n
 	    return itertools.zip_longest(*args)
-	global conn, id_user, reporte
 	if not(reporte is None):
 		try:
 			reporte.destroy()
@@ -207,6 +219,7 @@ def crearReporte(nombre):
 		data.append((str(isNone(row[1])),str(isNone(row[2])),str(isNone(row[3])),str(isNone(row[4])),str(isNone(row[5])),str(isNone(row[6])),str(isNone(row[7])),str(isNone(row[8])),str(isNone(row[9])),str(isNone(row[10])),str(isNone(row[11]))))
 	c = canvas.Canvas("reportes/"+nombre, pagesize=landscape(A2))
 	w, h = landscape(A2)
+	#pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
 	max_rows_per_page = 64
 	# Margin.
 	x_offset = 50
@@ -216,13 +229,17 @@ def crearReporte(nombre):
 	xlist = [x + x_offset for x in [0,80,550,790,840,990,1070,1220,1260,1440,1490,1570]]
 	ylist = [h - y_offset - i*padding for i in range(max_rows_per_page + 1)]
 	for rows in grouper(data, max_rows_per_page):
-	    rows = tuple(filter(bool, rows))
-	    c.grid(xlist, ylist[:len(rows) + 1])
-	    for y, row in zip(ylist[:-1], rows):
-	        for x, cell in zip(xlist, row):
-	            c.drawString(x + 2, y - padding + 3, str(cell))
-	    c.showPage()
-
+		text=c.beginText(50,h-100)
+		text.setFont("Times-Roman", 80,None)
+		text.textLine("Reporte de libros")
+		c.drawText(text)
+		c.setFont('Helvetica', 12,None)
+		rows = tuple(filter(bool, rows))
+		c.grid(xlist, ylist[:len(rows) + 1])
+		for y, row in zip(ylist[:-1], rows):
+		    for x, cell in zip(xlist, row):
+		        c.drawString(x + 2, y - padding + 3, str(cell))
+		c.showPage()
 	c.save()
 	wb.open_new(os.path.dirname(os.path.abspath(__file__))+"/reportes/"+nombre)
 def showOpcionesGrafica():

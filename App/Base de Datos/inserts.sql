@@ -18,14 +18,3 @@ INSERT INTO libro VALUES(null,"Queen of Shadows","Sarah J. Maas",1,"United State
 INSERT INTO libro VALUES(null,"Empire of Storms","Sarah J. Maas",1,"United States","Ingles","Bloomsbury Publishing",2016,"Throne of Glass",689,null,"Aelin is determined to never turn her back on her kingdom again. Cashing in debts to raise an army, Aelin and her court travel around Erilea in an attempt to stop Lord Erawan of the Valg from destroying the world, but with so many sworn enemies in want of revenge, including Queen Maeve of the Fae, survival seems unlikely. Aelin begins to realise that there are events in her life which may not have happened by coincidence; in fact, many have been pulling strings in the background long before she was born, and that she was destined for something far greater than she thought.");
 INSERT INTO libro VALUES(null,"Tower of Dawn","Sarah J. Maas",1,"United States","Ingles","Bloomsbury Publishing",2017,"Throne of Glass",660,null,"Taking place around the same time as Empire of Storms, Chaol Westfall travels to the Southern Continent with Nesryn Faliq to receive treatment from the gifted healers there, and to raise a powerful army against the Valg. Yrene Towers' attempts of healing him lead to her becoming entangled in Chaol's past. Meanwhile, Nesryn improves relations with her family during her stay, and befriends Prince Sartaq.");
 INSERT INTO libro VALUES(null,"Kingdom of Ash","Sarah J. Maas",1,"United States","Ingles","Bloomsbury Publishing",2018,"Throne of Glass",984,null,"After being locked in an iron coffin for months by Maeve, Aelin resists torture in hopes to return to her kingdom. Rowan searches with his cadre and Elide to find Aelin, his mate and wife, while Aedion and Lysandra continue to defend Terrasen with the armies that Aelin gathered before she was captured, from forces that would seek to destroy it: Erawan. Chaol, Manon, and Dorian travel their own paths and missions to rescue Aelin and help her on her mission to become Queen again. Threads draw every character closer as they move towards a final battle of freedom for the lands of Adarlan and Terrasen.");
-
-
-INSERT INTO libro_leido VALUES(null,1,1,now());
-INSERT INTO libro_obtenido VALUES(null,1,1,now());
-INSERT INTO libro_obtenido VALUES(null,1,3,now());
-INSERT INTO libro_obtenido VALUES(null,1,4,now());
-INSERT INTO libro_deseado VALUES(null,1,2,now());
-INSERT INTO libro_deseado VALUES(null,1,5,now());
-
-SELECT DATE_FORMAT(fecha,'%b %Y') as month,COUNT(fecha) as total_records FROM libro_obtenido WHERE id_usuario = 1 GROUP BY DATE_FORMAT(fecha,'%Y-%m'),id_usuario ORDER BY DATE_FORMAT(fecha,'%Y-%m-%d');
-SELECT DATE_FORMAT(fecha,'%Y') as month,COUNT(fecha) as total_records FROM libro_obtenido WHERE id_usuario = 1 GROUP BY DATE_FORMAT(fecha,'%Y'),id_usuario ORDER BY DATE_FORMAT(fecha,'%Y-%m-%d');
